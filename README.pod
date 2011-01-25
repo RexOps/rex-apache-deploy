@@ -1,0 +1,55 @@
+=pod
+
+rex-apache-deply is a (R)?ex module to deploy webservers.
+
+=head2 Usage
+
+In your Rexfile use the following commands.
+
+ use Rex::Apache::Deploy;
+
+ # upload files to this directory and extract them into a subdirectory
+ deploy_to "/var/www/deploy";
+
+ # the document root. this will be a symlink to the deploy directory
+ document_root "/var/www/html";
+
+ # set template configuration file
+ template_file "template.conf";
+
+ # search for filepattern in the webapplication archive to inject values from template.conf
+ template_search_for "*.inject.*";
+  
+ # function to generate real file names from template files
+ generate_real_name sub {
+     my ($template_file_name) = @_;
+     $template_file_name =~ s/\.template//;
+     return $template_file_name;
+ };
+
+ # generate special directory to extract files to
+ generate_deploy_directory sub {
+     my ($file) = @_;
+     $file =~ m/-(\d\.\d\.\d)\.tar\.gz$/;
+     return $1;
+ };
+
+ desc "Inject live configuration";
+ task "inject", sub {
+    # extract latest.tar.gz and search for files name *.template.*. 
+    # open these files and search for template variables and replace it with
+    # the definition in template.conf
+
+    inject "mypkg-1.0.0.tar.gz";
+ };
+
+ desc "Upload & Deploy to live servers";
+ task "deploy", "server1", "server2", "server3", sub {
+    # this will upload the file to /var/www/deploy/1.0.0
+    # and create a symlink to /var/www/html from /var/www/deploy/1.0.0
+
+    deploy "mypkg-1.0.0.tar.gz";
+ };
+
+
+
