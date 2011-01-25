@@ -7,6 +7,7 @@ rex-apache-deply is a (R)?ex module to deploy webservers.
 In your Rexfile use the following commands.
 
  use Rex::Apache::Deploy;
+ use Data::Dumper;
 
  # upload files to this directory and extract them into a subdirectory
  deploy_to "/var/www/deploy";
@@ -51,5 +52,18 @@ In your Rexfile use the following commands.
     deploy "mypkg-1.0.0.tar.gz";
  };
 
+ desc "List all deployed versions";
+ task "list", "server1", "server2", "server3", sub {
+    print Dumper([ list_versions ]);
+ };
+
+ desc "Switch to an other version (rollback)";
+ task "rollback", "server1", "server2", "server3", sub {
+    my ($params) = @_;
+
+    if ( exists $params->{'version'} ) {
+       switch_to_version $params->{'version'};
+    }
+ };
 
 
