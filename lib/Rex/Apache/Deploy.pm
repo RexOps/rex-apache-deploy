@@ -21,6 +21,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
+use File::Basename qw(dirname);
 
 our $VERSION = '0.2';
 
@@ -73,6 +74,14 @@ sub deploy {
    my $rnd_file = get_random(8, a..z, 0..9);
    use strict;
    use warnings;
+
+   unless(is_writeable($deploy_to)) {
+      die("No write permisson to $deploy_to\n");
+   }
+
+   unless(is_writeable(dirname($document_root))) {
+      die("No write permission to " . dirname($document_root) . "\n");
+   }
 
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
 
