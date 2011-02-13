@@ -77,12 +77,12 @@ sub deploy {
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
 
    my $deploy_dir = "$deploy_to/" . &$generate_deploy_directory($file);
-   mkd $deploy_dir;
+   mkdir $deploy_dir;
 
    run "cd $deploy_dir; " . sprintf(_get_extract_command($file), "/tmp/$rnd_file" . _get_ext($file));
    run "ln -snf $deploy_dir $document_root";
 
-   rm "/tmp/$rnd_file" . _get_ext($file);
+   unlink "/tmp/$rnd_file" . _get_ext($file);
 }
 
 sub list_versions {
