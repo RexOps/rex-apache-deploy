@@ -22,7 +22,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 require Exporter;
 use base qw(Exporter);

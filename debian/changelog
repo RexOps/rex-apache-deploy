@@ -1,3 +1,7 @@
+rex-apache-deploy (0.2) unstable; urgency=low
+  * port to rex 0.2
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 13 Feb 2011 19:05:00 +0200
+
 rex-apache-deploy (0.1) unstable; urgency=low
   * initial package
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 28 Jan 2011 22:20:00 +0200
