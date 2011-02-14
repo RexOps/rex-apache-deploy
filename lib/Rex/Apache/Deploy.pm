@@ -83,16 +83,13 @@ sub deploy {
       die("No write permission to " . dirname($document_root) . "\n");
    }
 
-   my $gen_dir_name = &$generate_deploy_directory($file);
+   my $deploy_dir = get_deploy_directory($file);
 
-   if(get_live_version() eq $gen_dir_name) {
+   if(get_live_version() eq basename($deploy_dir)) {
       die("Sorry, you try to deploy to a version that is currently live.");
    }
 
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
-
-   my $deploy_dir = "$deploy_to/$gen_dir_name";
-
 
    if(is_dir($deploy_dir)) {
       rmdir $deploy_dir;
@@ -129,6 +126,15 @@ sub get_live_version {
 
 
 ############ configuration functions #############
+
+sub get_deploy_directory {
+   my ($file) = @_;
+
+   my $gen_dir_name = &$generate_deploy_directory($file);
+   my $deploy_dir = "$deploy_to/$gen_dir_name";
+   
+   return $deploy_dir;
+}
 
 sub generate_real_name {
    $real_name_from_template = shift;
