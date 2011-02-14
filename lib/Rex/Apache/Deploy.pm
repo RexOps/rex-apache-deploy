@@ -86,6 +86,11 @@ sub deploy {
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
 
    my $deploy_dir = "$deploy_to/" . &$generate_deploy_directory($file);
+
+   if(is_dir($deploy_dir)) {
+      rmdir $deploy_dir;
+   }
+
    mkdir $deploy_dir;
 
    run "cd $deploy_dir; " . sprintf(_get_extract_command($file), "/tmp/$rnd_file" . _get_ext($file));
