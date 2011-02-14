@@ -21,7 +21,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
-use File::Basename qw(dirname);
+use File::Basename qw(dirname basename);
 
 our $VERSION = '0.2';
 
@@ -29,7 +29,7 @@ require Exporter;
 use base qw(Exporter);
 
 use vars qw(@EXPORT $real_name_from_template $deploy_to $document_root $generate_deploy_directory $template_file $template_pattern);
-@EXPORT = qw(inject deploy 
+@EXPORT = qw(inject deploy get_live_version
                generate_real_name deploy_to generate_deploy_directory document_root 
                template_file template_search_for list_versions switch_to_version);
 
@@ -110,6 +110,11 @@ sub switch_to_version {
    if(! grep { /$new_version/ } @versions) { print "no version found!\n"; return; }
 
    run "ln -snf $deploy_to/$new_version $document_root";
+}
+
+sub get_live_version {
+   my $link = readlink $document_root;
+   return basename($link);
 }
 
 
