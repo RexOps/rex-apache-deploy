@@ -83,9 +83,16 @@ sub deploy {
       die("No write permission to " . dirname($document_root) . "\n");
    }
 
+   my $gen_dir_name = &$generate_deploy_directory($file);
+
+   if(get_live_version() eq $gen_dir_name) {
+      die("Sorry, you try to deploy to a version that is currently live.");
+   }
+
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
 
-   my $deploy_dir = "$deploy_to/" . &$generate_deploy_directory($file);
+   my $deploy_dir = "$deploy_to/$gen_dir_name";
+
 
    if(is_dir($deploy_dir)) {
       rmdir $deploy_dir;
