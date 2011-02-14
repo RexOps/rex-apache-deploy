@@ -120,8 +120,11 @@ sub switch_to_version {
 }
 
 sub get_live_version {
-   my $link = readlink $document_root;
-   return basename($link);
+   my $link = eval {
+      return readlink $document_root;
+   };
+
+   return basename($link) if($link);
 }
 
 
