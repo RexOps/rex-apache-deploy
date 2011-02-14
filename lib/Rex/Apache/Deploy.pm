@@ -83,7 +83,7 @@ sub deploy {
       die("No write permission to " . dirname($document_root) . "\n");
    }
 
-   my $deploy_dir = get_deploy_directory($file);
+   my $deploy_dir = get_deploy_directory_for($file);
 
    if(get_live_version() eq basename($deploy_dir)) {
       die("Sorry, you try to deploy to a version that is currently live.");
@@ -127,7 +127,7 @@ sub get_live_version {
 
 ############ configuration functions #############
 
-sub get_deploy_directory {
+sub get_deploy_directory_for {
    my ($file) = @_;
 
    my $gen_dir_name = &$generate_deploy_directory($file);
