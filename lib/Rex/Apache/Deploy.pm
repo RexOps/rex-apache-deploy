@@ -23,7 +23,7 @@ use Rex::Commands::Upload;
 use Rex::Commands;
 use File::Basename qw(dirname basename);
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 require Exporter;
 use base qw(Exporter);
@@ -52,7 +52,10 @@ sub inject {
       my $content = eval { local(@ARGV, $/) = ($file); $_=<>; $_; };
       for my $key (keys %$template_params) {
          my $val = $template_params->{$key};
-         $content =~ s/\@$key\@/$val/g;
+         if($content =~ m/\@$key\@/gm) {
+            Rex::Logger::info("Replacing \@$key\@ with $val ($file)");
+            $content =~ s/\@$key\@/$val/g;
+         }
       }
 
       my $new_file_name = &$real_name_from_template($file);
@@ -76,22 +79,28 @@ sub deploy {
    use warnings;
 
    unless(is_writeable($deploy_to)) {
-      die("No write permisson to $deploy_to\n");
+      Rex::Logger::info("No write permission to $deploy_to");
+      exit 1;
    }
 
    unless(is_writeable(dirname($document_root))) {
-      die("No write permission to " . dirname($document_root) . "\n");
+      Rex::Logger::info("No write permission to $document_root");
+      exit 1;
    }
 
    my $deploy_dir = get_deploy_directory_for($file);
+   Rex::Logger::debug("deploy_dir: $deploy_dir");
 
    if(get_live_version() eq basename($deploy_dir)) {
-      die("Sorry, you try to deploy to a version that is currently live.");
+      Rex::Logger::info("Sorry, you try to deploy to a version that is currently live.");
+      exit 1;
    }
 
+   Rex::Logger::debug("Uploadling $file to /tmp/$rnd_file" . _get_ext($file));
    upload ($file, "/tmp/$rnd_file" . _get_ext($file));
 
    if(is_dir($deploy_dir)) {
+      Rex::Logger::debug("rmdir $deploy_dir");
       rmdir $deploy_dir;
    }
 
@@ -100,6 +109,7 @@ sub deploy {
    run "cd $deploy_dir; " . sprintf(_get_extract_command($file), "/tmp/$rnd_file" . _get_ext($file));
    run "ln -snf $deploy_dir $document_root";
 
+   Rex::Logger::debug("Unlinking /tmp/$rnd_file" . _get_ext($file));
    unlink "/tmp/$rnd_file" . _get_ext($file);
 }
 
@@ -111,7 +121,7 @@ sub switch_to_version {
    my ($new_version) = @_;
 
    my @versions = list_versions;
-   if(! grep { /$new_version/ } @versions) { print "no version found!\n"; return; }
+   if(! grep { /$new_version/ } @versions) { Rex::Logger::info("no version found!"); return; }
 
    run "ln -snf $deploy_to/$new_version $document_root";
 }
