@@ -1,3 +1,9 @@
+rex-apache-deploy (0.3.99) unstable; urgency=low
+  * splitted inject and deploy code
+  * modularized inject and deploy
+  * port to rex 0.4
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 11 Apr 2011 20:40:00 +0200
+
 rex-apache-deploy (0.3) unstable; urgency=low
   * port to rex 0.3
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 08 Apr 2011 11:40:00 +0200
