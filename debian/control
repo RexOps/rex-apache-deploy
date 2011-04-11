@@ -2,11 +2,11 @@ Source: rex-apache-deploy
 Section: admin
 Priority: optional
 Maintainer: Jan Gehring <jan.gehring@gmail.com>
-Build-Depends: debhelper (>= 4), perl (>= 5.10.0), rex (>= 0.3.0)
+Build-Depends: debhelper (>= 4), perl (>= 5.10.0), rex (>= 0.3.99)
 Standards-Version: 3.5.1
 Homepage: https://github.com/krimdomu/rex-apache-deploy
 
 Package: rex-apache-deploy
 Architecture: all
-Depends: perl (>= 5.10.0), rex (>= 0.3.0)
+Depends: perl (>= 5.10.0), rex (>= 0.3.99)
 Description: Apache Deploy Plugin for (R)?ex
