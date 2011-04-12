@@ -19,7 +19,11 @@ use warnings;
 
 use Data::Dumper;
 
+our $VERSION = '0.3.99';
+
 sub import {
+
+   die("Invalid input format") unless($_[1] =~ m/^[a-z0-9_]+$/i);
 
    eval "use $_[0]::$_[1];";
 
