@@ -22,6 +22,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
 use File::Basename qw(dirname basename);
+use Cwd qw(getcwd);
 
 #require Exporter;
 #use base qw(Exporter);
@@ -30,6 +31,8 @@ use vars qw(@EXPORT $real_name_from_template $template_file $template_pattern);
 @EXPORT = qw(inject
                generate_real_name
                template_file template_search_for);
+
+my $work_dir = getcwd;
 
 ############ deploy functions ################
 
@@ -49,23 +52,26 @@ sub inject {
 
    if(exists $option->{"extract"}) {
       for my $file_pattern (@{$option->{"extract"}}) {
-         mkdir "tmp-b";
-         chdir "tmp-b";
 
          for my $found_file (`find ../ -name $file_pattern`) {
             chomp $found_file;
-            my $extract_cmd  = sprintf( _get_extract_command($found_file), $found_file );
-            my $compress_cmd = sprintf( _get_pack_command($found_file), $found_file );
+
+            mkdir "tmp-b";
+            chdir "tmp-b";
+
+            my $extract_cmd  = sprintf( _get_extract_command($found_file), "../$found_file" );
+            my $compress_cmd = sprintf( _get_pack_command($found_file), "../$found_file", "." );
 
             run $extract_cmd;
 
             _find_and_parse_templates();
 
             run $compress_cmd;
+
+            chdir "..";
+            rmdir "tmp-b";
          }
 
-         chdir "..";
-         rmdir "tmp-b";
       }
    }
 
@@ -100,7 +106,7 @@ sub _find_and_parse_templates {
          }
       }
 
-      my $new_file_name = &$real_name_from_template($file);
+      my $new_file_name = $real_name_from_template?&$real_name_from_template($file):$file;
       open(my $fh, ">", $new_file_name) or die($!);
       print $fh $content;
       close($fh);
@@ -165,7 +171,7 @@ sub _get_pack_command {
 # read the template file and return a hashref.
 sub _get_template_params {
    my ($template_file) = @_;
-   my @lines = eval { local(@ARGV) = ($template_file); <>; };
+   my @lines = eval { local(@ARGV) = ($work_dir . "/" . $template_file); <>; };
    my $r = {};
    for my $line (@lines) {
       next if ($line =~ m/^#/);
