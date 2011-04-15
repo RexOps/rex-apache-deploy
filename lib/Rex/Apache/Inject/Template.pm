@@ -53,7 +53,7 @@ sub inject {
    if(exists $option->{"extract"}) {
       for my $file_pattern (@{$option->{"extract"}}) {
 
-         for my $found_file (`find ../ -name $file_pattern`) {
+         for my $found_file (`find ../ -name '$file_pattern'`) {
             chomp $found_file;
 
             mkdir "tmp-b";
@@ -95,7 +95,7 @@ sub _find_and_parse_templates {
 
    my $template_params = _get_template_params($template_file);
 
-   for my $file (`find . -name $template_pattern`) {
+   for my $file (`find . -name '$template_pattern'`) {
       chomp $file;
       my $content = eval { local(@ARGV, $/) = ($file); $_=<>; $_; };
       for my $key (keys %$template_params) {
