@@ -34,7 +34,9 @@ use vars qw(@EXPORT $real_name_from_template $template_file $template_pattern);
 ############ deploy functions ################
 
 sub inject {
-   my ($to) = @_;
+   my ($to, @options) = @_;
+
+   my $option = { @options };
 
    my $cmd1 = sprintf (_get_extract_command($to), "../$to");
    my $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
@@ -44,6 +46,39 @@ sub inject {
    mkdir("tmp");
    chdir("tmp");
    run $cmd1;
+
+   if(exists $option->{"extract"}) {
+      for my $file_pattern (@{$option->{"extract"}}) {
+         mkdir "tmp-b";
+         chdir "tmp-b";
+
+         for my $found_file (`find ../ -name $file_pattern`) {
+            chomp $found_file;
+            my $extract_cmd  = sprintf( _get_extract_command($found_file), $found_file );
+            my $compress_cmd = sprintf( _get_pack_command($found_file), $found_file );
+
+            run $extract_cmd;
+
+            _find_and_parse_templates();
+
+            run $compress_cmd;
+         }
+
+         chdir "..";
+         rmdir "tmp-b";
+      }
+   }
+
+   _find_and_parse_templates();
+
+   run $cmd2;
+   chdir("..");
+   system("rm -rf tmp");
+}
+
+sub _find_and_parse_templates {
+
+   my $template_params = _get_template_params($template_file);
 
    for my $file (`find . -name $template_pattern`) {
       chomp $file;
@@ -62,9 +97,7 @@ sub inject {
       close($fh);
    }
 
-   run $cmd2;
-   chdir("..");
-   system("rm -rf tmp");
+
 }
 
 
@@ -93,6 +126,10 @@ sub _get_extract_command {
       return "unzip %s";
    } elsif($file =~ m/\.tar\.bz2$/) {
       return "tar xjf %s";
+   } elsif($file =~ m/\.war$/) {
+      return "unzip %s";
+   } elsif($file =~ m/\.jar$/) {
+      return "unzip %s";
    }
 
    die("Unknown Archive Format.");
@@ -107,6 +144,10 @@ sub _get_pack_command {
       return "zip -r %s %s";
    } elsif($file =~ m/\.tar\.bz2$/) {
       return "tar cjf %s %s";
+   } elsif($file =~ m/\.war$/) {
+      return "zip -r %s %s";
+   } elsif($file =~ m/\.jar$/) {
+      return "zip -r %s %s";
    }
 
    die("Unknown Archive Format.");
@@ -140,6 +181,10 @@ sub _get_ext {
       return ".zip";
    } elsif($file =~ m/\.tar\.bz2$/) {
       return ".tar.bz2";
+   } elsif($file =~ m/\.war$/) {
+      return ".war";
+   } elsif($file =~ m/\.jar$/) {
+      return ".jar";
    }
 
    die("Unknown Archive Format.");
