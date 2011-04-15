@@ -1,3 +1,7 @@
+rex-apache-deploy (0.3.99.2) unstable; urgency=low
+  * pre and post pack hooks
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 15 Apr 2011 10:15:00 +0200
+
 rex-apache-deploy (0.3.99.1) unstable; urgency=low
   * fixed manifest
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 15 Apr 2011 10:15:00 +0200

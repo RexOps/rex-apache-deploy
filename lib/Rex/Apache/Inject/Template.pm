@@ -71,7 +71,16 @@ sub inject {
 
    _find_and_parse_templates();
 
+   if(exists $option->{"pre_pack_hook"}) {
+      &{ $option->{"pre_pack_hook"} };
+   }
+
    run $cmd2;
+
+   if(exists $option->{"post_pack_hook"}) {
+      &{ $option->{"post_pack_hook"} };
+   }
+
    chdir("..");
    system("rm -rf tmp");
 }

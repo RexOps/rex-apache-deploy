@@ -36,7 +36,7 @@ use vars qw(@EXPORT $template_file $template_pattern);
 ############ deploy functions ################
 
 sub inject {
-   my ($to) = @_;
+   my ($to, $option) = @_;
 
    my $cmd1 = sprintf (_get_extract_command($to), "../$to");
    my $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
@@ -77,7 +77,16 @@ sub inject {
       close($fh);
    }
 
+   if(exists $option->{"pre_pack_hook"}) {
+      &{ $option->{"pre_pack_hook"} };
+   }
+
    run $cmd2;
+
+   if(exists $option->{"post_pack_hook"}) {
+      &{ $option->{"post_pack_hook"} };
+   }
+
    chdir("..");
    system("rm -rf tmp");
 }
