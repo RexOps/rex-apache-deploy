@@ -23,9 +23,11 @@ our $VERSION = '0.3.99.2';
 
 sub import {
 
+   my ($call_class) = caller;
+
    die("Invalid input format") unless($_[1] =~ m/^[a-z0-9_]+$/i);
 
-   eval "use $_[0]::$_[1];";
+   eval "use $_[0]::$_[1] '$call_class';";
 
 }
 

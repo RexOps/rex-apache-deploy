@@ -97,6 +97,7 @@ sub _find_and_parse_templates {
 
    for my $file (`find . -name '$template_pattern'`) {
       chomp $file;
+      Rex::Logger::debug("Opening file $file");
       open(my $fh, "<$file") or die($!);
       my %con;
       while (my $line = <$fh>) {
@@ -117,6 +118,7 @@ sub _find_and_parse_templates {
       }
 
       my $new_file_name = $real_name_from_template?&$real_name_from_template($file):$file;
+      Rex::Logger::debug("Writing file $new_file_name");
       open($fh, ">", $new_file_name) or die($!);
       for my $key (keys %con) {
          print $fh "$key=" . $con{$key} . "\n";
@@ -223,7 +225,7 @@ sub import {
    no strict 'refs';
    for my $func (@EXPORT) {
       Rex::Logger::debug("Registering main::$func");
-      *{"main::$func"} = \&$func;
+      *{"$_[1]::$func"} = \&$func;
    }
 
 }

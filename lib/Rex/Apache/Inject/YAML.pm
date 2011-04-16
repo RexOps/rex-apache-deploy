@@ -173,7 +173,7 @@ sub import {
    no strict 'refs';
    for my $func (@EXPORT) {
       Rex::Logger::debug("Registering main::$func");
-      *{"main::$func"} = \&$func;
+      *{"$_[1]::$func"} = \&$func;
    }
 
 }
