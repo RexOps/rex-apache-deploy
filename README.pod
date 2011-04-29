@@ -6,64 +6,25 @@ rex-apache-deply is a (R)?ex module to deploy webservers.
 
 In your Rexfile use the following commands.
 
- use Rex::Apache::Deploy;
- use Data::Dumper;
+To inject special configuration parameters for different environments
 
- # upload files to this directory and extract them into a subdirectory
- deploy_to "/var/www/deploy";
+ use Rex::Apache::Inject YAML;
 
- # the document root. this will be a symlink to the deploy directory
- document_root "/var/www/html";
+ template_file "inject.conf";
+ template_search_for "application.yml";
 
- # set template configuration file
- template_file "template.conf";
-
- # search for filepattern in the webapplication archive to inject values from template.conf
- template_search_for "*.inject.*";
-  
- # function to generate real file names from template files
- generate_real_name sub {
-     my ($template_file_name) = @_;
-     $template_file_name =~ s/\.template//;
-     return $template_file_name;
- };
-
- # generate special directory to extract files to
- generate_deploy_directory sub {
-     my ($file) = @_;
-     $file =~ m/-(\d\.\d\.\d)\.tar\.gz$/;
-     return $1;
- };
-
- desc "Inject live configuration";
+ desc "Inject Configuration";
  task "inject", sub {
-    # extract latest.tar.gz and search for files name *.template.*. 
-    # open these files and search for template variables and replace it with
-    # the definition in template.conf
 
-    inject "mypkg-1.0.0.tar.gz";
+   inject "myapp-1.0.tar.gz", {
+               pre_pack_hook => sub {
+                  run "BUNDLE_PATH=vendor/bundle bundle install";
+               },
+   };
+
  };
+ 
+Deploy the package
 
- desc "Upload & Deploy to live servers";
- task "deploy", "server1", "server2", "server3", sub {
-    # this will upload the file to /var/www/deploy/1.0.0
-    # and create a symlink to /var/www/html from /var/www/deploy/1.0.0
-
-    deploy "mypkg-1.0.0.tar.gz";
- };
-
- desc "List all deployed versions";
- task "list", "server1", "server2", "server3", sub {
-    print Dumper([ list_versions ]);
- };
-
- desc "Switch to an other version (rollback)";
- task "rollback", "server1", "server2", "server3", sub {
-    my ($params) = @_;
-
-    if ( exists $params->{'version'} ) {
-       switch_to_version $params->{'version'};
-    }
- };
 
 
