@@ -1,3 +1,7 @@
+rex-apache-deploy (0.4.1) unstable; urgency=low
+  * version bump
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 09 May 2011 19:25:00 +0200
+
 rex-apache-deploy (0.3.99.3) unstable; urgency=low
   * added Command Inject module
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 21 Apr 2011 21:15:00 +0200
