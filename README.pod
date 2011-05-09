@@ -26,5 +26,17 @@ To inject special configuration parameters for different environments
  
 Deploy the package
 
+ deploy_to "/path/to/deploy/to";
+ document_root "/var/www/html";
+
+ generate_deploy_directory sub {
+    return $VERSION;
+ };
+
+ desc "Deploy Package";
+ task "deploy", group => "fe", sub {
+    deploy "myapp-1.0.tar.gz";
+ };
+
 
 
