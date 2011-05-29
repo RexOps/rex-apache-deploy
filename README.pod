@@ -1,6 +1,8 @@
 =pod
 
-rex-apache-deply is a (R)?ex module to deploy webservers.
+rex-apache-deploy is a (R)?ex module to deploy webservers.
+
+You can find (R)?ex under http://rexify.org/
 
 =head2 Usage
 
