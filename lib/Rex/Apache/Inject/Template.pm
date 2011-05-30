@@ -66,7 +66,15 @@ sub inject {
 
             _find_and_parse_templates();
 
+            if(exists $option->{"pre_pack_hook"}) {
+               &{ $option->{"pre_pack_hook"} }($found_file);
+            }
+
             run $compress_cmd;
+
+            if(exists $option->{"post_pack_hook"}) {
+               &{ $option->{"post_pack_hook"} }($found_file);
+            }
 
             chdir "..";
             rmdir "tmp-b";
