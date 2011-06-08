@@ -34,7 +34,9 @@ use vars qw(@EXPORT $context_path);
 
 sub deploy {
 
-   my ($file, $option) = @_;
+   my ($file, @option) = @_;
+
+   my $options = { @option };
 
    no strict;
    no warnings;
@@ -42,19 +44,19 @@ sub deploy {
    use strict;
    use warnings;
 
-   if(! exists $option->{"context_path"}) {
-      $option->{"context_path"} = $context_path;
+   if(! exists $options->{"context_path"}) {
+      $options->{"context_path"} = $context_path;
    }
 
    upload ($file, "/tmp/$rnd_file.war");
 
-   $option->{"file"} = "/tmp/$rnd_file.war";
+   $options->{"file"} = "/tmp/$rnd_file.war";
 
    # zuerst muss undeployed werden
-   _undeploy($option);
+   _undeploy($options);
 
    # und dann wieder deployen
-   _deploy($option);
+   _deploy($options);
 
 
    unlink "/tmp/$rnd_file.war";
@@ -114,7 +116,10 @@ sub _do_action {
 	my $ua = LWP::UserAgent->new();
    my $current_connection = Rex::get_current_connection();
 
-   my $resp = $ua->get(_get_url($current_connection->{"server"} . ":".$port, "$action?path=$path", $user, $pw));
+   my $_url = _get_url($current_connection->{"server"} . ":".$port, "$action?path=$path", $user, $pw);
+   Rex::Logger::debug("Connecting to: $_url");
+
+   my $resp = $ua->get($_url);
    if($resp->is_success) {
       Rex::Logger::info($resp->decoded_content);
    } else {

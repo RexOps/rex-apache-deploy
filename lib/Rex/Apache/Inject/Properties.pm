@@ -114,6 +114,9 @@ sub _find_and_parse_templates {
          next if($line =~ /^$/);
 
          my ($key, $val) = $line =~ m/^(.*?)=(.*)$/;
+         next unless $key;
+         $val = "" unless $val;
+
          $con{$key} = $val;
       }
       close($fh);
@@ -199,7 +202,7 @@ sub _get_template_params {
       next if($line =~ /^#/);
       next if($line =~ /^$/);
 
-      my ($key, $val) = ($line =~ m/^(.*?)=(.*)$/);
+      my ($key, $val) = ($line =~ m/^(.*?)[=:](.*)$/);
       $inject{$key} = $val;
    }
    close($fh);

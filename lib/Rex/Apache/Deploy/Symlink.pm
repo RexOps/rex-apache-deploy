@@ -34,7 +34,9 @@ use vars qw(@EXPORT $deploy_to $document_root $generate_deploy_directory);
 ############ deploy functions ################
 
 sub deploy {
-   my ($file) = @_;
+   my ($file, @option) = @_;
+
+   my $options = { @option };
 
    no strict;
    no warnings;

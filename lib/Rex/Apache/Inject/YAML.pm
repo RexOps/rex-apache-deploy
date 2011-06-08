@@ -36,7 +36,9 @@ use vars qw(@EXPORT $template_file $template_pattern);
 ############ deploy functions ################
 
 sub inject {
-   my ($to, $option) = @_;
+   my ($to, @options) = @_;
+
+   my $option = { @options };
 
    my $cmd1 = sprintf (_get_extract_command($to), "../$to");
    my $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
