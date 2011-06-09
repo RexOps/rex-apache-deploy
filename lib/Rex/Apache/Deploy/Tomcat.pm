@@ -74,7 +74,8 @@ sub _deploy {
    my $resp = $ua->get(_get_url($current_connection->{"server"} . ":" . $p->{'port'},
                                  "deploy?path=" . $p->{"context_path"} . "&war=file:" . $p->{"file"}, 
                                  $p->{"username"}, 
-                                 $p->{"password"}));
+                                 $p->{"password"},
+                                 $p->{"manager_url"}));
    if($resp->is_success) {
       Rex::Logger::info($resp->decoded_content);
    } else {
@@ -91,7 +92,8 @@ sub _undeploy {
                $p->{"context_path"},
                $p->{"port"},
                $p->{"username"},
-               $p->{"password"});
+               $p->{"password"},
+               $p->{"manager_url"});
 
 }
 
@@ -100,8 +102,11 @@ sub _get_url {
 	my $command = shift;
    my $user = shift;
    my $pw = shift;
+   my $mgr_path = shift;
+
+   $mgr_path ||= "manager";
 	
-	return "http://$user:$pw\@" . "$server/manager/$command";
+	return "http://$user:$pw\@" . "$server/$mgr_path/$command";
 }
 
 
@@ -112,11 +117,14 @@ sub _do_action {
    my $port   = shift;
    my $user   = shift;
    my $pw     = shift;
+   my $mgr_path = shift;
+
+   $mgr_path ||= "manager";
 
 	my $ua = LWP::UserAgent->new();
    my $current_connection = Rex::get_current_connection();
 
-   my $_url = _get_url($current_connection->{"server"} . ":".$port, "$action?path=$path", $user, $pw);
+   my $_url = _get_url($current_connection->{"server"} . ":".$port, "$action?path=$path", $user, $pw, $mgr_path);
    Rex::Logger::debug("Connecting to: $_url");
 
    my $resp = $ua->get($_url);

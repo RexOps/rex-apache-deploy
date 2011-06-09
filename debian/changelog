@@ -1,4 +1,8 @@
-rex-apache-deploy (0.5.0) unstable; urgency=low
+rex-apache-deploy (0.4.99.1) unstable; urgency=low
+  * set path to tomcat manager
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 09 Jun 2011 11:00:00 +0200
+
+rex-apache-deploy (0.4.99.0) unstable; urgency=low
   * standardization for function calls
   * allow = and : for seperator in templates file (Inject::Properties)
   * version update
