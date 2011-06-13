@@ -32,6 +32,8 @@ You can find examples and howtos on L<http://rexify.org/>
 
 L<Rex>
 
+=back
+
 =head1 SYNOPSIS
 
  use Rex::Apache::Deploy Symlink;

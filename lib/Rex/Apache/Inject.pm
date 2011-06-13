@@ -32,6 +32,8 @@ You can find examples and howtos on L<http://rexify.org/>
 
 L<Rex>
 
+=back
+
 =head1 SYNOPSIS
 
  use Rex::Apache::Inject Properties;
@@ -142,6 +144,8 @@ This method will parse YAML files inside the archive. For this method you need t
  };
 
 This will search the file I<application.yml> inside of myapp.tar.gz and replace the configuration values inside of it with these defined in I<live_config.yml>. Also it do a pre pack hook that will run I<bundle install>.
+
+=back
 
 =cut
 
