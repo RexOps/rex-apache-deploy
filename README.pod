@@ -18,11 +18,13 @@ To inject special configuration parameters for different environments
  desc "Inject Configuration";
  task "inject", sub {
 
-   inject "myapp-1.0.tar.gz", {
+   inject "myapp-1.0.tar.gz",
                pre_pack_hook => sub {
                   run "BUNDLE_PATH=vendor/bundle bundle install";
                },
-   };
+               post_pack_hool => sub {
+                  say "Hello, i'm the post pack hook\n";
+               };
 
  };
  
