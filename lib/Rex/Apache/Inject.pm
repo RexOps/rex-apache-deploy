@@ -24,7 +24,7 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =back
 
-=head1 Dependencies
+=head1 DEPENDENCIES
 
 =over 4
 

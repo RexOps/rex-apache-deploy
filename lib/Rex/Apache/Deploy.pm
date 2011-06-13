@@ -24,7 +24,7 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =back
 
-=head1 Dependencies
+=head1 DEPENDENCIES
 
 =over 4
 
@@ -37,17 +37,17 @@ L<Rex>
 =head1 SYNOPSIS
 
  use Rex::Apache::Deploy Symlink;
-
+   
  deploy_to "/var/deploy";
-
+   
  document_root "/var/www/myhost/htdocs";
-
+   
  generate_deploy_directory sub {
     my ($file) = @_;
     $file =~ m/-(\d+\.\d+\.\d+)\.tar\.gz$/;
     return $1;
  };
-
+   
  desc "Deploy to Apache";
  task "deploy", group => "frontend", sub {
     deploy "mypkg-1.0.1.tar.gz";
