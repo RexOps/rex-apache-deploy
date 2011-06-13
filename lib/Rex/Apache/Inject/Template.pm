@@ -6,14 +6,6 @@
 
 package Rex::Apache::Inject::Template;
 
-=begin
-
-=head2 SYNOPSIS
-
-This is a (R)?ex module to ease the deployments of PHP, Perl or other languages.
-
-=cut
-
 use strict;
 use warnings;
 

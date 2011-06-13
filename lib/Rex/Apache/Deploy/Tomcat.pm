@@ -48,6 +48,15 @@ sub deploy {
       $options->{"context_path"} = $context_path;
    }
 
+   if(exists $options->{"manager_url"}) {
+      my $mgr_url = $options->{"manager_url"};
+      $mgr_url =~ s{^/}{};
+      $options->{"manager_url"} = $mgr_url;
+   } 
+   else {
+      $options->{"manager_url"} = "manager";
+   }
+
    upload ($file, "/tmp/$rnd_file.war");
 
    $options->{"file"} = "/tmp/$rnd_file.war";
