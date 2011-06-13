@@ -7,3 +7,4 @@ lib/Rex/Apache/Inject/Properties.pm
 lib/Rex/Apache/Inject/Template.pm
 lib/Rex/Apache/Inject/YAML.pm
 Makefile.PL
+README
