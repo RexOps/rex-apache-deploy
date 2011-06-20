@@ -113,7 +113,7 @@ sub _find_and_parse_templates {
          next if($line =~ /^#/);
          next if($line =~ /^$/);
 
-         my ($key, $val) = $line =~ m/^(.*?)=(.*)$/;
+         my ($key, $val) = $line =~ m/^(.*?)\s+?=\s+?(.*)$/;
          next unless $key;
          $val = "" unless $val;
 
