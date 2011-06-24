@@ -202,7 +202,7 @@ sub _get_template_params {
       next if($line =~ /^#/);
       next if($line =~ /^$/);
 
-      my ($key, $val) = ($line =~ m/^(.*?)[=:](.*)$/);
+      my ($key, $val) = ($line =~ m/^(.*?)\s?[=:]\s?(.*)$/);
       $inject{$key} = $val;
    }
    close($fh);

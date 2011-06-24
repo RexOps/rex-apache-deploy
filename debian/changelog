@@ -1,5 +1,5 @@
 rex-apache-deploy (0.5.1) unstable; urgency=low
-  * fixed template parsing in proerpty files
+  * fixed template parsing in property files
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 20 Jun 2011 11:40:00 +0200
 
 rex-apache-deploy (0.5.0) unstable; urgency=low
