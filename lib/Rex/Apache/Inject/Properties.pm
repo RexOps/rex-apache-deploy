@@ -112,6 +112,7 @@ sub _find_and_parse_templates {
          chomp $line;
          next if($line =~ /^#/);
          next if($line =~ /^$/);
+         $line =~ s/\r//gs;
 
          my ($key, $val) = $line =~ m/^(.*?)\s+?=\s+?(.*)$/;
          next unless $key;
@@ -201,6 +202,7 @@ sub _get_template_params {
       chomp $line;
       next if($line =~ /^#/);
       next if($line =~ /^$/);
+      $line =~ s/\r//gs;
 
       my ($key, $val) = ($line =~ m/^(.*?)\s?[=:]\s?(.*)$/);
       $inject{$key} = $val;
