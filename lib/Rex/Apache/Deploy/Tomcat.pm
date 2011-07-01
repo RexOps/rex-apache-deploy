@@ -28,7 +28,7 @@ use LWP::UserAgent;
 #use base qw(Exporter);
 
 use vars qw(@EXPORT $context_path);
-@EXPORT = qw(deploy context_path);
+@EXPORT = qw(deploy context_path jk);
 
 ############ deploy functions ################
 
@@ -69,6 +69,29 @@ sub deploy {
 
 
    unlink "/tmp/$rnd_file.war";
+}
+
+sub jk {
+   my ($action, $iname, @opts) = @_;
+   my $option = { @opts };
+   my $path = $option->{"path"} || "/jkmanager";
+
+   my $url = "http://%s%s/?cmd=update&w=lb&att=vwa&sw=%s&vwa=%i";
+   my $server = Rex->get_current_connection()->{"server"};
+
+   if($action eq "disable") {
+      $url = sprintf($url, $server, $path, $iname, 1);
+   }
+   else {
+      $url = sprintf($url, $server, $path, $iname, 0);
+   }
+
+   my $ua = LWP::UserAgent->new;
+   my $response = $ua->get($url);
+
+   if(! $response->is_success) {
+      die("Failed $action instance");
+   }
 }
 
 ############ helper function ##############
