@@ -58,6 +58,7 @@ sub deploy {
    }
 
    upload ($file, "/tmp/$rnd_file.war");
+   chmod 644, "/tmp/$rnd_file.war";
 
    $options->{"file"} = "/tmp/$rnd_file.war";
 
