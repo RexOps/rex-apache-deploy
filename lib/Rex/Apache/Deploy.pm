@@ -96,7 +96,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '0.5.0';
+our $VERSION = '0.5.1';
 
 sub import {
 

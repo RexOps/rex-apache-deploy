@@ -176,6 +176,7 @@ sub _get_template_params {
    for my $line (@lines) {
       next if ($line =~ m/^#/);
       next if ($line =~ m/^\s*?$/);
+      $line =~ s/\r//gs;
 
       my ($key, $val) = ($line =~ m/^(.*?) ?= ?(.*)$/);
       $val =~ s/^["']//;

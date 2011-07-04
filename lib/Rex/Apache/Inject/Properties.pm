@@ -115,6 +115,7 @@ sub _find_and_parse_templates {
          $line =~ s/\r//gs;
          next if($line =~ /^#/);
          next if($line =~ /^$/);
+         $line =~ s/\r//gs;
 
          my ($key, $val) = $line =~ m/^(.*?)\s?[=:]\s?(.*)$/;
 				 Rex::Logger::debug("key: -$key- => val: -$val-");
@@ -215,6 +216,7 @@ sub _get_template_params {
       $line =~ s/\r//gs;
       next if($line =~ /^#/);
       next if($line =~ /^$/);
+      $line =~ s/\r//gs;
 
       my ($key, $val) = ($line =~ m/^(.*?)\s?[=:]\s?(.*)$/);
       $inject{$key} = $val;
