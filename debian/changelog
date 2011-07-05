@@ -1,5 +1,7 @@
 rex-apache-deploy (0.5.2) unstable; urgency=low
+  * added tab as an allowed property seperator
   * fixed another property parsing bug
+  * enable/disable tomcat instances in mod_jk
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 04 Jul 2011 11:40:00 +0200
 
 rex-apache-deploy (0.5.1) unstable; urgency=low
