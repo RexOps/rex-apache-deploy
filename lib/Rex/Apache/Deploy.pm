@@ -86,6 +86,14 @@ This will deploy I<myapp.war> to the tomcat listening on port I<8080> with the m
 
 =back
 
+=head2 SWITCHING INSTANCES
+
+If you have multiple Tomcat Instances you can manage them with the I<jk> command.
+
+ jk disable => 'name';
+ jk enable  => 'name';
+
+
 =cut
 
 
