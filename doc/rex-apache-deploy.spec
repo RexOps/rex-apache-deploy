@@ -5,11 +5,11 @@
 
 Summary: Rex-Apache-Deploy is a (R)?ex Module to deploy Websites.
 Name: rex-apache-deploy
-Version: 0.5.1
+Version: 0.5.2
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.5.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.5.2.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl >= 5.8.0
@@ -48,6 +48,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Tue Jul 05 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.2-1
+- added tab as an allowed property seperator
+- fixed another property parsing bug
+- enable/disable tomcat instances in mod_jk
 
 * Mon Jun 27 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.1-1
 - fixed template parsing in property files
