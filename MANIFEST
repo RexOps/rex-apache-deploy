@@ -1,3 +1,4 @@
+ChangeLog
 lib/Rex/Apache/Deploy.pm
 lib/Rex/Apache/Deploy/Symlink.pm
 lib/Rex/Apache/Deploy/Tomcat.pm
