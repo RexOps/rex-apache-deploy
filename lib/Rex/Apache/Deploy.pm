@@ -104,7 +104,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '0.5.1';
+our $VERSION = '0.5.2';
 
 sub import {
 
