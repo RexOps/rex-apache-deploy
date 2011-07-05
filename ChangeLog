@@ -1,0 +1,5 @@
+2011-07-05 Jan Gehring <jan.gehring, gmail.com> (0.5.2)
+  * added tab as an allowed property seperator
+  * fixed another property parsing bug
+  * enable/disable tomcat instances in mod_jk
+
