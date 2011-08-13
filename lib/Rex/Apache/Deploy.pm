@@ -111,51 +111,8 @@ use Cwd qw(getcwd);
 our $VERSION = '0.6.0';
 
 ###### commonly used
-our @COMMONS = qw(yui yui_path);
+our @COMMONS = ();
 
-use vars qw($yui_path);
-
-sub yui_path {
-   ($yui_path) = @_;
-
-   unless($yui_path =~ m/^\//) {
-      $yui_path = getcwd() . "/" . $yui_path;
-   }
-}
-
-sub yui {
-   my ($action, @data) = @_;
-
-   unless(-f $yui_path) {
-      die("No yuicompressor.jar found. Please download this file and define its location with yui_path '/path/to/yuicompress.jar';");
-   }
-
-   if($action eq "compress") {
-      my @js_files  = grep { ! /\.min\.js$/  } grep { /\.js$/i } @data;
-      my @css_files = grep { ! /\.min\.css$/ } grep { /\.css$/i } @data;
-
-      if(@js_files) {
-         for my $file (@js_files) {
-            my $new_file = $file;
-            $new_file    =~ s/\.js$/.min.js/;
-            Rex::Logger::debug("Compressing $file -> $new_file");
-            run "java -jar $yui_path -o '$new_file' $file";
-         }
-      }
-
-      if(@css_files) {
-         for my $file (@css_files) {
-            my $new_file = $file;
-            $new_file    =~ s/\.css$/.min.css/;
-            Rex::Logger::debug("Compressing $file -> $new_file");
-            run "java -jar $yui_path -o '$new_file' $file";
-         }
-      }
-   }
-   else {
-      die("Action $action not supported.");
-   }
-}
 
 sub import {
 
