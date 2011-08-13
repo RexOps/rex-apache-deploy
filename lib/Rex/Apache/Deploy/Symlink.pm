@@ -106,6 +106,13 @@ sub get_live_version {
 sub get_deploy_directory_for {
    my ($file) = @_;
 
+   unless($generate_deploy_directory) {
+      $generate_deploy_directory = sub {
+         my ($file) = @_;
+         $file =~ m/-(\d\.\d\.\d)\.(zip|tar\.gz|war|tar\.bz2|jar)$/;
+         return $1;
+      };
+   }
    my $gen_dir_name = &$generate_deploy_directory($file);
    my $deploy_dir = "$deploy_to/$gen_dir_name";
    
