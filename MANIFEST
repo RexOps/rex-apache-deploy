@@ -1,4 +1,5 @@
 ChangeLog
+lib/Rex/Apache/Build.pm
 lib/Rex/Apache/Deploy.pm
 lib/Rex/Apache/Deploy/Symlink.pm
 lib/Rex/Apache/Deploy/Tomcat.pm
@@ -7,5 +8,6 @@ lib/Rex/Apache/Inject/Command.pm
 lib/Rex/Apache/Inject/Properties.pm
 lib/Rex/Apache/Inject/Template.pm
 lib/Rex/Apache/Inject/YAML.pm
+LICENSE
 Makefile.PL
 README
