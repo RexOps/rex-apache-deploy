@@ -11,3 +11,6 @@ pm_to_blib
 debian/*.log
 *.bak
 README
+*.tmp
+doc/html
+create_pod.sh
