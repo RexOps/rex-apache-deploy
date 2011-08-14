@@ -23,6 +23,11 @@ use Rex::Commands::Upload;
 use Rex::Commands;
 use File::Basename qw(dirname basename);
 
+use Rex::Apache::Build;
+
+use File::Basename qw(basename);
+use Cwd qw(getcwd);
+
 #require Exporter;
 #use base qw(Exporter);
 
@@ -37,6 +42,31 @@ sub deploy {
    my ($file, @option) = @_;
 
    my $options = { @option };
+   my $version = get_version();
+
+   if(exists $options->{version}) {
+      $version = $options->{version};
+   }
+
+   unless($file) {
+      # if no file is given, use directory name
+      $file = basename(getcwd());
+   }
+
+   unless(-f $file) {
+      # if file doesn't exists, try to find it
+      if(-f "$file.tar.gz") {
+         $file = "$file.tar.gz";
+      }
+      elsif(-f "$file-$version.tar.gz") {
+         $file = "$file-$version.tar.gz";
+      }
+      else {
+         Rex::Logger::debug("No file found to deploy ($file)");
+         die("File $file not found.");
+      }
+   }
+
 
    no strict;
    no warnings;
@@ -109,7 +139,7 @@ sub get_deploy_directory_for {
    unless($generate_deploy_directory) {
       $generate_deploy_directory = sub {
          my ($file) = @_;
-         $file =~ m/-(\d\.\d\.\d)\.(zip|tar\.gz|war|tar\.bz2|jar)$/;
+         $file =~ m/-([0-9\._~]+)\.(zip|tar\.gz|war|tar\.bz2|jar)$/;
          return $1;
       };
    }
