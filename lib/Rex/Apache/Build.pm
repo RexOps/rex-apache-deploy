@@ -51,7 +51,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(yui yui_path build get_version_from);
+@EXPORT = qw(yui yui_path build get_version_from get_version);
 
 use vars qw($yui_path $APP_VERSION);
 
@@ -174,7 +174,8 @@ sub build {
       $excludes = " --exclude " . join(" --exclude ", @{$option{exclude}});
    }
 
-   run "tar -c $excludes --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .\n";
+   run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .\n";
+   Rex::Logger::info("Build: $name$version.tar.gz");
 
    chdir($old_dir);
 }
@@ -198,6 +199,10 @@ sub get_version_from {
       return $version;
 
    };
+}
+
+sub get_version {
+   return &$APP_VERSION();
 }
 
 
