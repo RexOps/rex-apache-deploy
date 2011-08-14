@@ -1,6 +1,7 @@
 2011-08-13 Jan Gehring <jan.gehring, gmail.com> (0.6.0)
   * added yui compressor support
-  * [Deploy::Symlink] added a default function for generate_deploy_directory the default awaits now files in the format: name-\d.\d.\d\.zip|tar\.gz|tar\.bz2|war
+  * [Deploy::Symlink] added a default function for generate_deploy_directory
+    the default awaits now files in the format: name-[0-9\._~]+.zip|tar\.gz|tar\.bz2|war
   * Added support to build .tar.gz packages
 
 2011-07-05 Jan Gehring <jan.gehring, gmail.com> (0.5.2)
