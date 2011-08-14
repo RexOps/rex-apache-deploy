@@ -151,7 +151,7 @@ This will search the file I<application.yml> inside of myapp.tar.gz and replace 
 
 package Rex::Apache::Inject;
 
-our $VERSION = "0.5.2";
+our $VERSION = "0.6.0";
 
 use strict;
 use warnings;
