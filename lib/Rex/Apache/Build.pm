@@ -51,9 +51,9 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(yui yui_path build get_version_from get_version);
+@EXPORT = qw(yui yui_path build get_version_from get_version coffee sprocketize coffee_path sprocketize_path);
 
-use vars qw($yui_path $APP_VERSION);
+use vars qw($yui_path $coffee_path $sprocketize_path $APP_VERSION);
 
 use Rex::Commands::Run;
 use Rex::Logger;
@@ -68,6 +68,32 @@ sub yui_path {
 
    unless($yui_path =~ m/^\//) {
       $yui_path = getcwd() . "/" . $yui_path;
+   }
+}
+
+=item coffee_path($path_to_coffee)
+
+This function sets the path to the coffee compiler. If a relative path is given it will search from the path where the Rexfile is in.
+
+=cut
+sub coffee_path {
+   ($coffee_path) = @_;
+
+   unless($coffee_path =~ m/^\//) {
+      $coffee_path = getcwd() . "/" . $coffee_path;
+   }
+}
+
+=item sprocketize_path($path_to_sprocketize)
+
+This function sets the path to the sprocketize compiler. If a relative path is given it will search from the path where the Rexfile is in.
+
+=cut
+sub sprocketize_path {
+   ($sprocketize_path) = @_;
+
+   unless($sprocketize_path =~ m/^\//) {
+      $sprocketize_path = getcwd() . "/" . $sprocketize_path;
    }
 }
 
@@ -205,6 +231,49 @@ sub get_version {
    return &$APP_VERSION();
 }
 
+
+=item sprocketize($path_to_js_files, %option)
+
+This function calls the sprocketize command with the given options.
+
+ task "build", sub {
+    sprocketize "app/javascript/*.js",
+                  include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
+                  asset_root => "public/js",
+                  outfile    => "public/js/sprockets.js";
+         
+    # if called without parameters
+
+    sprocketize;
+
+    # it will use the following defaults:
+    # - javascript (sprockets) in app/javascripts/*.js
+    # - include  app/javascripts
+    # - asset_root public
+    # - outfile public/$name_of_directory.js
+ };
+
+=cut
+
+sub sprocketize {
+   my ($files, %option) = @_;
+
+   my $dirname = basename(getcwd());
+
+   unless($sprocketize_path) {
+      $sprocketize_path = "sprocketize";
+   }
+
+   unless($files) {
+      $files = "app/javascripts/*.js";
+      $option{include}    = ["app/javascripts"];
+      $option{asset_root} = "public";
+      $option{outfile}    = "public/$dirname.js";
+   }
+
+   my $includes = " -I " . join(" -I ", @{$option{include}});
+   run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files > " . $option{outfile};
+}
 
 =back
 
