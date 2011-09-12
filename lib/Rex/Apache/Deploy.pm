@@ -108,7 +108,7 @@ use Rex::Logger;
 
 use Cwd qw(getcwd);
 
-our $VERSION = '0.6.0';
+our $VERSION = '0.7.0';
 
 ###### commonly used
 our @COMMONS = ();
