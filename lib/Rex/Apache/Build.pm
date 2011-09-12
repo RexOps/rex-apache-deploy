@@ -55,9 +55,10 @@ use vars qw(@EXPORT);
                get_version_from get_version 
                yui yui_path 
                coffee coffee_path
-               sprocketize sprocketize_path);
+               sprocketize sprocketize_path
+               sass sass_path);
 
-use vars qw($yui_path $coffee_path $sprocketize_path $APP_VERSION);
+use vars qw($yui_path $coffee_path $sprocketize_path $sass_path $APP_VERSION);
 
 use Rex::Commands::Run;
 use Rex::Logger;
@@ -100,6 +101,21 @@ sub sprocketize_path {
       $sprocketize_path = getcwd() . "/" . $sprocketize_path;
    }
 }
+
+=item sass_path($path_to_sass)
+
+This function sets the path to the sass compiler. If a relative path is given it will search from the path where the Rexfile is in.
+
+=cut
+sub sass_path {
+   ($sass_path) = @_;
+
+   unless($sass_path =~ m/^\//) {
+      $sass_path = getcwd() . "/" . $sass_path;
+   }
+}
+
+
 
 =item yui($action, @files)
 
@@ -260,7 +276,7 @@ This function calls the sprocketize command with the given options.
                   include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
                   asset_root => "public/js",
                   outfile    => "public/js/sprockets.js";
-
+     
     # to include more use an arrayRef
     sprocketize ["app/javascript/*.js", "app/javascript/po/*.js"],
                   include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
@@ -268,9 +284,9 @@ This function calls the sprocketize command with the given options.
                   outfile    => "public/js/sprockets.js";
          
     # if called without parameters
-
+     
     sprocketize;
-
+     
     # it will use the following defaults:
     # - javascript (sprockets) in assets/javascripts/*.js
     # - include  assets/javascripts
@@ -332,7 +348,7 @@ Compile coffee files to javascript.
     # write the output to "javascripts"
     coffee "coffeesrc",
          out  => "javascripts";
-
+     
     # without parameters it will build all files in assets/coffee 
     # and write the output to public/javascripts.
     coffee;
@@ -355,7 +371,7 @@ sub coffee {
    }
 
    Rex::Logger::info("Building coffee script files...");
-   my $ret = run "coffee -o " . $option{out} . " -c " . $path;
+   my $ret = run "coffee -o " . $option{out} . " -c " . $path . " 2>&1";
 
    if($? == 0) {
       Rex::Logger::info("...done.");
@@ -363,6 +379,49 @@ sub coffee {
    else {
       Rex::Logger::info("Error building coffeescripts. $ret");
       die("Error building coffeescripts.");
+   }
+}
+
+=item sass($input_dir, %option)
+
+This command will compile all sass files in $input_dir.
+
+ task "build", sub {
+    # this command will compile all sass files from app/assets/stylesheets
+    # and put the output into public/stylesheets.
+    sass "app/assets/stylesheets",
+      out => "public/stylesheets";
+    
+    # The default is to build all files in assets/sass and put the output
+    # into public/css.
+    sass;
+ };
+
+=cut
+sub sass {
+   my ($input, %option) = @_;
+
+   unless($sass_path) {
+      $sass_path = "sass";
+   }
+
+   unless($input) {
+      $input = "assets/sass";
+   }
+
+   if(! exists $option{out}) {
+      $option{out} = "public/css";
+   }
+
+   Rex::Logger::info("Building sass files...");
+   my $ret = run "$sass_path -q --update $input:" . $option{out} . " 2>&1";
+
+   if($? == 0) {
+      Rex::Logger::info("...done.");
+   }
+   else {
+      Rex::Logger::info("Failed building sass files. $ret");
+      die("Failed building sass files.");
    }
 }
 
