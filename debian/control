@@ -8,5 +8,5 @@ Homepage: https://github.com/krimdomu/rex-apache-deploy
 
 Package: rex-apache-deploy
 Architecture: all
-Depends: perl (>= 5.8.0), rex (>= 0.6.0), libyaml-perl, libwww-perl
+Depends: perl (>= 5.8.0), rex (>= 0.6.0), libyaml-perl, libwww-perl, zip, unzip, tar
 Description: Apache Deploy Plugin for (R)?ex
