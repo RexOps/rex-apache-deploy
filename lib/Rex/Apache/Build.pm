@@ -51,7 +51,11 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(yui yui_path build get_version_from get_version coffee sprocketize coffee_path sprocketize_path sprocketize);
+@EXPORT = qw(build 
+               get_version_from get_version 
+               yui yui_path 
+               coffee coffee_path
+               sprocketize sprocketize_path);
 
 use vars qw($yui_path $coffee_path $sprocketize_path $APP_VERSION);
 
@@ -256,8 +260,8 @@ This function calls the sprocketize command with the given options.
     sprocketize;
 
     # it will use the following defaults:
-    # - javascript (sprockets) in app/javascripts/*.js
-    # - include  app/javascripts
+    # - javascript (sprockets) in assets/javascripts/*.js
+    # - include  assets/javascripts
     # - asset_root public
     # - outfile public/${name_of_directory_where_Rexfile_lives}.js
  };
@@ -274,7 +278,7 @@ sub sprocketize {
    }
 
    unless($files) {
-      $files = ["app/javascripts/*.js"];
+      $files = ["assets/javascripts/*.js"];
    }
 
    if(! exists $option{outfile}) {
@@ -304,6 +308,49 @@ sub sprocketize {
    else {
       Rex::Logger::info("Error running sprocketize");
       die("Error running sprocketize");
+   }
+}
+
+=item coffee($path, %options)
+
+Compile coffee files to javascript.
+
+ task "build", sub {
+    # this command will build all files in "coffeesrc" and
+    # write the output to "javascripts"
+    coffee "coffeesrc",
+         out  => "javascripts";
+
+    # without parameters it will build all files in assets/coffee 
+    # and write the output to public/javascripts.
+    coffee;
+ };
+
+=cut
+sub coffee {
+   my ($path, %option) = @_;
+
+   unless($coffee_path) {
+      $coffee_path = "coffee";
+   }
+
+   unless($path) {
+      $path = "assets/coffee";
+   }
+
+   if(! exists $option{out}) {
+      $option{out} = "public/javascripts";
+   }
+
+   Rex::Logger::info("Building coffee script files...");
+   my $ret = run "coffee -o " . $option{out} . " -c " . $path;
+
+   if($? == 0) {
+      Rex::Logger::info("...done.");
+   }
+   else {
+      Rex::Logger::info("Error building coffeescripts. $ret");
+      die("Error building coffeescripts.");
    }
 }
 
