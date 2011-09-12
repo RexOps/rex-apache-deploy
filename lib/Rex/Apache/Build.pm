@@ -33,6 +33,7 @@ With this module you can prepare your WebApp for deployment.
     sass "app/assets/stylesheets",
       out => "public/stylesheets";
           
+    yui;
     yui compress => "file1.js", "file2.js", "file3.css"; 
     yui compress => glob("public/javascript/*.js"), glob("public/css/*.css");
          
