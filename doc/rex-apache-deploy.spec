@@ -5,19 +5,23 @@
 
 Summary: Rex-Apache-Deploy is a (R)?ex Module to deploy Websites.
 Name: rex-apache-deploy
-Version: 0.6.0
+Version: 0.7.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.6.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.7.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl >= 5.8.0
 BuildRequires: perl(ExtUtils::MakeMaker)
-Requires: rex >= 0.6.0
+Requires: rex >= 0.18.0
 Requires: perl >= 5.8.0
 Requires: perl-libwww-perl
 Requires: perl-YAML
+Requires: unzip
+Requires: zip
+Requires: bzip2
+Requires: tar
 AutoReqProv: no
 
 %description
@@ -49,6 +53,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Tue Sep 13 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.0-1
+- added sprocketize command
+- added coffeescript support
+- added sass support
 
 * Sun Aug 14 2011 Jan Gehring <jan.gehring at, gmail.com> 0.6.0-1
 - added yui compressor support

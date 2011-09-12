@@ -1,3 +1,10 @@
+rex-apache-deploy (0.7.0) unstable; urgency=low
+  * added sprocketize command
+  * added coffeescript support
+  * added sass support
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Tue, 13 Sep 2011 01:30:00 +0200
+
 rex-apache-deploy (0.6.0) unstable; urgency=low
   * added yui compressor support
   * [Deploy::Symlink] added a default function for generate_deploy_directory
