@@ -106,7 +106,11 @@ sub sprocketize_path {
 Run a yui command.
 
  task "build", sub {
+    # this will compress the given files
     yui compress => "file1.js", "file2.js", ...;
+     
+    # yui without any parameters will compress all files in public/javascripts
+    yui;
  };
 
 =cut
@@ -117,7 +121,15 @@ sub yui {
       die("No yuicompressor.jar found. Please download this file and define its location with yui_path '/path/to/yuicompress.jar';");
    }
 
-   if($action eq "compress") {
+   unless($action) {
+      $action = "compress";
+   }
+
+   unless(@data) {
+      @data = glob("public/javascripts/*.js");
+   }
+
+   if($action eq "compress" || $action eq "-compress") {
       my @js_files  = grep { ! /\.min\.js$/  } grep { /\.js$/i } @data;
       my @css_files = grep { ! /\.min\.css$/ } grep { /\.css$/i } @data;
 
