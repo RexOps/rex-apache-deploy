@@ -51,7 +51,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(yui yui_path build get_version_from get_version coffee sprocketize coffee_path sprocketize_path);
+@EXPORT = qw(yui yui_path build get_version_from get_version coffee sprocketize coffee_path sprocketize_path sprocketize);
 
 use vars qw($yui_path $coffee_path $sprocketize_path $APP_VERSION);
 
@@ -118,6 +118,7 @@ sub yui {
       my @css_files = grep { ! /\.min\.css$/ } grep { /\.css$/i } @data;
 
       if(@js_files) {
+         Rex::Logger::info("Compressing javascript files");
          for my $file (@js_files) {
             my $new_file = $file;
             $new_file    =~ s/\.js$/.min.js/;
@@ -127,6 +128,7 @@ sub yui {
       }
 
       if(@css_files) {
+         Rex::Logger::info("Compressing css files");
          for my $file (@css_files) {
             my $new_file = $file;
             $new_file    =~ s/\.css$/.min.css/;
@@ -200,8 +202,9 @@ sub build {
       $excludes = " --exclude " . join(" --exclude ", @{$option{exclude}});
    }
 
+   Rex::Logger::info("Building: $name$version.tar.gz");
    run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .\n";
-   Rex::Logger::info("Build: $name$version.tar.gz");
+   Rex::Logger::info("Your build is now available: $name$version.tar.gz");
 
    chdir($old_dir);
 }
@@ -241,6 +244,12 @@ This function calls the sprocketize command with the given options.
                   include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
                   asset_root => "public/js",
                   outfile    => "public/js/sprockets.js";
+
+    # to include more use an arrayRef
+    sprocketize ["app/javascript/*.js", "app/javascript/po/*.js"],
+                  include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
+                  asset_root => "public/js",
+                  outfile    => "public/js/sprockets.js";
          
     # if called without parameters
 
@@ -250,7 +259,7 @@ This function calls the sprocketize command with the given options.
     # - javascript (sprockets) in app/javascripts/*.js
     # - include  app/javascripts
     # - asset_root public
-    # - outfile public/$name_of_directory.js
+    # - outfile public/${name_of_directory_where_Rexfile_lives}.js
  };
 
 =cut
@@ -265,14 +274,37 @@ sub sprocketize {
    }
 
    unless($files) {
-      $files = "app/javascripts/*.js";
-      $option{include}    = ["app/javascripts"];
-      $option{asset_root} = "public";
-      $option{outfile}    = "public/$dirname.js";
+      $files = ["app/javascripts/*.js"];
    }
 
+   if(! exists $option{outfile}) {
+      $option{outfile} = "public/$dirname.js";
+   }
+
+   if(! exists $option{asset_root}) {
+      $option{asset_root} = "public";
+   }
+
+   if(! exists $option{include}) {
+      $option{include} = ["app/javascripts"];
+   }
+
+   if(ref($files) ne "ARRAY") {
+      $files = [ $files ];
+   }
+
+   my $files_str = join(" ", @{$files});
    my $includes = " -I " . join(" -I ", @{$option{include}});
-   run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files > " . $option{outfile};
+
+   Rex::Logger::info("Sprocketizing...");
+   run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files_str > " . $option{outfile};
+   if($? == 0) {
+      Rex::Logger::info("...done.");
+   }
+   else {
+      Rex::Logger::info("Error running sprocketize");
+      die("Error running sprocketize");
+   }
 }
 
 =back
