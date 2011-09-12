@@ -21,7 +21,19 @@ With this module you can prepare your WebApp for deployment.
  get_version_from "webapp/index.php", qr{\$VERSION=([^;]+);};
      
  task "build", sub {
-    yui compress => "file1.js", "file2.js", "file3.css";
+    sprocketize;
+    sprocketize "app/assets/javascript/*.js",
+      out => "public/js/sprockets.js";
+        
+    coffee;
+    coffee "app/assets/coffee",
+      out => "public/js";
+      
+    sass;
+    sass "app/assets/stylesheets",
+      out => "public/stylesheets";
+          
+    yui compress => "file1.js", "file2.js", "file3.css"; 
     yui compress => glob("public/javascript/*.js"), glob("public/css/*.css");
          
     build;
@@ -275,13 +287,13 @@ This function calls the sprocketize command with the given options.
     sprocketize "app/javascript/*.js",
                   include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
                   asset_root => "public/js",
-                  outfile    => "public/js/sprockets.js";
+                  out        => "public/js/sprockets.js";
      
     # to include more use an arrayRef
     sprocketize ["app/javascript/*.js", "app/javascript/po/*.js"],
                   include    => [qw|app/javascripts vendor/sprockets/prototype/src|],
                   asset_root => "public/js",
-                  outfile    => "public/js/sprockets.js";
+                  out        => "public/js/sprockets.js";
          
     # if called without parameters
      
@@ -291,7 +303,7 @@ This function calls the sprocketize command with the given options.
     # - javascript (sprockets) in assets/javascripts/*.js
     # - include  assets/javascripts
     # - asset_root public
-    # - outfile public/${name_of_directory_where_Rexfile_lives}.js
+    # - out public/${name_of_directory_where_Rexfile_lives}.js
  };
 
 =cut
@@ -309,8 +321,8 @@ sub sprocketize {
       $files = ["assets/javascripts/*.js"];
    }
 
-   if(! exists $option{outfile}) {
-      $option{outfile} = "public/$dirname.js";
+   if(! exists $option{out}) {
+      $option{out} = "public/$dirname.js";
    }
 
    if(! exists $option{asset_root}) {
@@ -329,7 +341,7 @@ sub sprocketize {
    my $includes = " -I " . join(" -I ", @{$option{include}});
 
    Rex::Logger::info("Sprocketizing...");
-   run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files_str > " . $option{outfile};
+   run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files_str > " . $option{out};
    if($? == 0) {
       Rex::Logger::info("...done.");
    }
