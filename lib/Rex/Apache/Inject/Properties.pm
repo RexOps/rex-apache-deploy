@@ -53,7 +53,12 @@ sub inject {
    if(exists $option->{"extract"}) {
       for my $file_pattern (@{$option->{"extract"}}) {
 
-         for my $found_file (`find ../ -name '$file_pattern'`) {
+         my $find = "find ../ -name '$file_pattern'";
+         if($^O =~ m/^MSWin/i) {
+            $find = "find2 ../ -name \"$file_pattern\"";
+         }
+
+         for my $found_file (`$find`) {
             chomp $found_file;
 
             mkdir "tmp-b";
@@ -103,7 +108,12 @@ sub _find_and_parse_templates {
 
    my $template_params = _get_template_params($template_file);
 
-   for my $file (`find . -name '$template_pattern'`) {
+   my $find = "find . -name '$template_pattern'";
+   if($^O =~ m/^MSWin/i) {
+      $find = "find2 . -name \"$template_pattern\"";
+   }
+
+   for my $file (`$find`) {
       $/ = "\n";
       chomp $file;
       Rex::Logger::debug("Opening file $file");

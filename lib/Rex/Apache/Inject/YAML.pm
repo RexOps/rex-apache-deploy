@@ -51,11 +51,17 @@ sub inject {
 
    my $is_w = $^W;
 
-   for my $file (`find . -name $template_pattern`) {
+   my $find = "find . -name '$template_pattern'";
+   if($^O =~ m/^MSWin/i) {
+      $find = "find2 . -name \"$template_pattern\"";
+   }
+
+   for my $file (`$find`) {
       chomp $file;
       Rex::Logger::debug("Found file: $file");
 
-      my $content = eval { local(@ARGV, $/) = ($file); $_=<>; $_; };
+      my $content;
+      { local $/ = undef; local *FILE; open FILE, "<$file"; $content = <FILE>; close FILE }
 
       my $data;
       eval {
@@ -137,7 +143,8 @@ sub _get_pack_command {
 # read the template file and return a hashref.
 sub _get_template_params {
    my ($template_file) = @_;
-   my $content = eval { local(@ARGV, $/) = ($template_file); <>; };
+   my $content;
+   { local $/ = undef; local *FILE; open FILE, "<$template_file"; $content = <FILE>; close FILE }
 
    return Load($content);
 }

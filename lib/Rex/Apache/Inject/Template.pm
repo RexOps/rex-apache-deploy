@@ -45,7 +45,12 @@ sub inject {
    if(exists $option->{"extract"}) {
       for my $file_pattern (@{$option->{"extract"}}) {
 
-         for my $found_file (`find ../ -name '$file_pattern'`) {
+         my $find = "find ../ -name '$file_pattern'";
+         if($^O =~ m/^MSWin/i) {
+            $find = "find2 ../ -name \"$file_pattern\"";
+         }
+
+         for my $found_file (`$find`) {
             chomp $found_file;
 
             mkdir "tmp-b";
@@ -95,9 +100,15 @@ sub _find_and_parse_templates {
 
    my $template_params = _get_template_params($template_file);
 
-   for my $file (`find . -name '$template_pattern'`) {
+   my $find = "find . -name '$template_pattern'";
+   if($^O =~ m/^MSWin/i) {
+      $find = "find2 . -name \"$template_pattern\"";
+   }
+
+   for my $file (`$find`) {
       chomp $file;
-      my $content = eval { local(@ARGV, $/) = ($file); $_=<>; $_; };
+      my $content;
+      { local $/ = undef; local *FILE; open FILE, "<$file"; $content = <FILE>; close FILE }
       for my $key (keys %$template_params) {
          my $val = $template_params->{$key};
          if($content =~ m/\@$key\@/gm) {
@@ -171,12 +182,18 @@ sub _get_pack_command {
 # read the template file and return a hashref.
 sub _get_template_params {
    my ($template_file) = @_;
-   my @lines = eval { local(@ARGV) = ($work_dir . "/" . $template_file); <>; };
+   my @lines;
+   open(my $fh, "<", $work_dir . "/" . $template_file) or die($!);
+   @lines = <$fh>;
+   close($fh);
+   chomp @lines;
+
    my $r = {};
    for my $line (@lines) {
       next if ($line =~ m/^#/);
       next if ($line =~ m/^\s*?$/);
       $line =~ s/\r//gs;
+      $line =~ s/\n//gs;
 
       my ($key, $val) = ($line =~ m/^(.*?) ?= ?(.*)$/);
       $val =~ s/^["']//;

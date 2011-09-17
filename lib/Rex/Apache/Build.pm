@@ -170,7 +170,7 @@ sub yui {
             my $new_file = $file;
             $new_file    =~ s/\.js$/.min.js/;
             Rex::Logger::debug("Compressing $file -> $new_file");
-            run "java -jar $yui_path -o '$new_file' $file";
+            run "java -jar $yui_path -o $new_file $file";
          }
       }
 
@@ -180,7 +180,7 @@ sub yui {
             my $new_file = $file;
             $new_file    =~ s/\.css$/.min.css/;
             Rex::Logger::debug("Compressing $file -> $new_file");
-            run "java -jar $yui_path -o '$new_file' $file";
+            run "java -jar $yui_path -o $new_file $file";
          }
       }
    }
@@ -250,7 +250,12 @@ sub build {
    }
 
    Rex::Logger::info("Building: $name$version.tar.gz");
-   run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .\n";
+   if($^O =~ m/^MSWin/i) {
+      run "tar -c $excludes --exclude \"$name-*.tar.gz\" --exclude \".*.sw*\" --exclude \"*~\" --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .";
+   }
+   else {
+      run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .";
+   }
    Rex::Logger::info("Your build is now available: $name$version.tar.gz");
 
    chdir($old_dir);
