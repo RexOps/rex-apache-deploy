@@ -42,11 +42,6 @@ sub deploy {
    my ($file, @option) = @_;
 
    my $options = { @option };
-   my $version = get_version();
-
-   if(exists $options->{version}) {
-      $version = $options->{version};
-   }
 
    unless($file) {
       # if no file is given, use directory name
@@ -54,6 +49,12 @@ sub deploy {
    }
 
    unless(-f $file) {
+      my $version = get_version();
+
+      if(exists $options->{version}) {
+         $version = $options->{version};
+      }
+
       # if file doesn't exists, try to find it
       if(-f "$file.tar.gz") {
          $file = "$file.tar.gz";
