@@ -11,3 +11,4 @@ lib/Rex/Apache/Inject/YAML.pm
 LICENSE
 Makefile.PL
 README
+t/01.t
