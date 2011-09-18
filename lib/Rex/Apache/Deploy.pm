@@ -32,7 +32,38 @@ You can find examples and howtos on L<http://rexify.org/>
 
 L<Rex>
 
+=item *
+
+L<YAML>
+
+=item *
+
+L<LWP::Simple>
+
+=item *
+
+zip
+
+=item *
+
+unzip
+
+=item *
+
+tar
+
+=item *
+
+bzip2
+
+=item *
+
+wget
+
 =back
+
+If you're using windows, you can install them from here: http://sourceforge.net/projects/gnuwin32/files/
+Don't forget to add the bin directory of the installation to your %PATH% environment variable.
 
 =head1 SYNOPSIS
 

@@ -1,3 +1,8 @@
+rex-apache-deploy (0.8.0) unstable; urgency=low
+  * added windows support
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 18 Sep 2011 14:10:00 +0200
+
 rex-apache-deploy (0.7.0) unstable; urgency=low
   * added sprocketize command
   * added coffeescript support
