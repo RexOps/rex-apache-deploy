@@ -21,6 +21,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
+use Rex::Config;
 use File::Basename qw(dirname basename);
 
 use YAML;
@@ -143,6 +144,11 @@ sub _get_pack_command {
 # read the template file and return a hashref.
 sub _get_template_params {
    my ($template_file) = @_;
+
+   if(-f "$template_file." . Rex::Config->get_environment) {
+      $template_file = "$template_file." . Rex::Config->get_environment;
+   }
+
    my $content;
    { local $/ = undef; local *FILE; open FILE, "<$template_file"; $content = <FILE>; close FILE }
 

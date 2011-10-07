@@ -21,6 +21,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands;
+use Rex::Config;
 use File::Basename qw(dirname basename);
 use Cwd qw(getcwd);
 
@@ -219,7 +220,13 @@ sub _get_pack_command {
 sub _get_template_params {
    my %inject;
 
-   open(my $fh, "<$work_dir/$template_file") or die($!);
+   my $t_file = "$work_dir/$template_file";
+
+   if(-f "$work_dir/$template_file." . Rex::Config->get_environment) {
+      $t_file = "$work_dir/$template_file." . Rex::Config->get_environment;
+   }
+
+   open(my $fh, "<", $t_file) or die($!);
    while (my $line = <$fh>) {
       chomp $line;
       $line =~ s/\r//gs;
