@@ -119,6 +119,9 @@ sub _find_and_parse_templates {
    }
 
    for my $file (`$find`) {
+      next if($file =~ m/\.svn\//);
+      next if($file =~ m/\.git\//);
+
       chomp $file;
       my $content;
       { local $/ = undef; local *FILE; open FILE, "<$file"; $content = <FILE>; close FILE }
@@ -142,7 +145,7 @@ sub _find_and_parse_templates {
 
 ############ configuration functions #############
 
-sub generate_real_name {
+sub generate_real_name(&) {
    $real_name_from_template = shift;
 }
 
