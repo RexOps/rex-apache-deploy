@@ -1,3 +1,8 @@
+rex-apache-deploy (0.8.99.0) unstable; urgency=low
+  * inject (templates) now works with already extracted source
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 14 Oct 2011 10:00:00 +0200
+
 rex-apache-deploy (0.8.0) unstable; urgency=low
   * added windows support
 
