@@ -34,14 +34,21 @@ sub inject {
 
    my $option = { @options };
 
-   my $cmd1 = sprintf (_get_extract_command($to), "../$to");
-   my $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
+   my ($cmd1, $cmd2);
+
+   if(is_file($to)) {
+      $cmd1 = sprintf (_get_extract_command($to), "../$to");
+      $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
+
+      mkdir("tmp");
+      chdir("tmp");
+      run $cmd1;
+   }
+   else {
+      chdir($to);
+   }
 
    my $template_params = _get_template_params($template_file);
-
-   mkdir("tmp");
-   chdir("tmp");
-   run $cmd1;
 
    if(exists $option->{"extract"}) {
       for my $file_pattern (@{$option->{"extract"}}) {
@@ -83,18 +90,23 @@ sub inject {
 
    _find_and_parse_templates();
 
-   if(exists $option->{"pre_pack_hook"}) {
-      &{ $option->{"pre_pack_hook"} };
-   }
+   if(is_file($to)) {
+      if(exists $option->{"pre_pack_hook"}) {
+         &{ $option->{"pre_pack_hook"} };
+      }
 
-   run $cmd2;
+      run $cmd2;
 
-   if(exists $option->{"post_pack_hook"}) {
-      &{ $option->{"post_pack_hook"} };
+      if(exists $option->{"post_pack_hook"}) {
+         &{ $option->{"post_pack_hook"} };
+      }
    }
 
    chdir("..");
-   system("rm -rf tmp");
+
+   if(is_file($to)) {
+      system("rm -rf tmp");
+   }
 }
 
 sub _find_and_parse_templates {
