@@ -75,9 +75,10 @@ sub deploy {
 sub jk {
    my ($action, $iname, @opts) = @_;
    my $option = { @opts };
-   my $path = $option->{"path"} || "/jkmanager";
+   my $path   = $option->{"path"} || "/jkmanager";
+   my $worker = $option->{"worker"} || "";
 
-   my $url = "http://%s%s/?cmd=update&w=lb&att=vwa&sw=%s&vwa=%i";
+   my $url = "http://%s%s/?cmd=update&w=$worker&att=vwa&sw=%s&vwa=%i";
    my $server = Rex->get_current_connection()->{"server"};
 
    if($action eq "disable") {
