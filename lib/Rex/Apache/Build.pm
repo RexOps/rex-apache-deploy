@@ -54,7 +54,7 @@ With this module you can prepare your WebApp for deployment.
    
 package Rex::Apache::Build;
    
-our $VERSION = "0.8.99.1";
+our $VERSION = "0.9.0";
 
 use strict;
 use warnings;
