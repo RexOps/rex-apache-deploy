@@ -5,11 +5,11 @@
 
 Summary: Rex-Apache-Deploy is a (R)?ex Module to deploy Websites.
 Name: rex-apache-deploy
-Version: 0.8.0
+Version: 0.9.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.8.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.9.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl >= 5.8.0
@@ -53,6 +53,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Thu Dec 08 2011 Jan Gehring <jan.gehring at, gmail.com> 0.9.0-1
+- added full support for non compressed sources
+- use current time if no version is available
+- extended regexp for version detection
 
 * Sun Sep 18 2011 Jan Gehring <jan.gehring at, gmail.com> 0.8.0-1
 - added windows support

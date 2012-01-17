@@ -16,3 +16,4 @@ pm_toblib
 .*\.old$
 ^\.DS_*
 \.sh$
+\.tar

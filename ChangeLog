@@ -1,5 +1,7 @@
-2011-09-11 Jan Gehring <jan.gehring, gmail.com> (0.8.99.0)
-  * inject now works with already extracted source
+2011-12-08 Jan Gehring <jan.gehring, gmail.com> (0.9.0)
+  * added full support for non compressed sources
+  * use current time if no version is available
+  * extended regexp for version detection
 
 2011-09-11 Jan Gehring <jan.gehring, gmail.com> (0.8.0)
   * added windows support

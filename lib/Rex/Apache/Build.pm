@@ -54,7 +54,7 @@ With this module you can prepare your WebApp for deployment.
    
 package Rex::Apache::Build;
    
-our $VERSION = "0.8.99.1";
+our $VERSION = "0.9.0";
 
 use strict;
 use warnings;
@@ -272,7 +272,8 @@ sub get_version_from {
    $APP_VERSION = sub {
 
       unless(-f $file) {
-         die("Version file not found ($file). Current Path: " . getcwd());
+         Rex::Logger::info("Version file not found ($file). Current Path: " . getcwd() . ". Using current time.");
+         return "" . time;
       }
 
       my ($version) = grep { $_=$1 if $_ =~ $regex; } eval { local(@ARGV) = ($file); <>; };
