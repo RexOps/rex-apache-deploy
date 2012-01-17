@@ -127,7 +127,7 @@ sub _find_and_parse_templates {
          next if($line =~ /^#/);
          next if($line =~ /^$/);
 
-         my ($key, $val) = $line =~ m/^(.*?)\s?[=:\t]\s?(.*)$/;
+         my ($key, $val) = $line =~ m/^(.*?)\s?[=:]\s?(.*)$/;
 				 Rex::Logger::debug("key: -$key- => val: -$val-");
 
 				 unless($key) {
