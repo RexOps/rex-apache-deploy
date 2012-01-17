@@ -75,6 +75,10 @@ sub deploy {
    use strict;
    use warnings;
 
+   unless(is_dir($deploy_to)) {
+      mkdir $deploy_to;
+   }
+
    unless(is_writeable($deploy_to)) {
       Rex::Logger::info("No write permission to $deploy_to");
       exit 1;
