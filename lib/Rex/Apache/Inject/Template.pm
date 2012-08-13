@@ -37,8 +37,11 @@ sub inject {
    my ($cmd1, $cmd2);
 
    if(is_file($to)) {
-      $cmd1 = sprintf (_get_extract_command($to), "../$to");
-      $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
+      my $tmp_to = $to;
+      if($tmp_to !~ m/^\//) { $tmp_to = "../$tmp_to"; }
+
+      $cmd1 = sprintf (_get_extract_command($to), "$tmp_to");
+      $cmd2 = sprintf (_get_pack_command($to), "$tmp_to", ".");
 
       mkdir("tmp");
       chdir("tmp");
@@ -200,10 +203,16 @@ sub _get_template_params {
    my ($template_file) = @_;
    my @lines;
 
-   my $t_file = "$work_dir/$template_file";
+   my $t_file;
+   if($template_file =~ m/^\//) {
+      $t_file = $template_file;
+   }
+   else {
+      $t_file = "$work_dir/$template_file";
+   }
 
-   if(-f "$work_dir/$template_file." . Rex::Config->get_environment) {
-      $t_file = "$work_dir/$template_file." . Rex::Config->get_environment;
+   if(-f "$t_file." . Rex::Config->get_environment) {
+      $t_file = "$t_file." . Rex::Config->get_environment;
    }
 
    open(my $fh, "<", $t_file) or die($!);
