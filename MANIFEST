@@ -10,5 +10,6 @@ lib/Rex/Apache/Inject/Template.pm
 lib/Rex/Apache/Inject/YAML.pm
 LICENSE
 Makefile.PL
+MANIFEST
 README
 t/01.t
