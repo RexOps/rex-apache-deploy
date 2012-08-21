@@ -5,11 +5,11 @@
 
 Summary: Rex-Apache-Deploy is a (R)?ex Module to deploy Websites.
 Name: rex-apache-deploy
-Version: 0.9.0
+Version: 0.10.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.9.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-Apache-Deploy-0.10.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl >= 5.8.0
@@ -54,37 +54,5 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
-* Thu Dec 08 2011 Jan Gehring <jan.gehring at, gmail.com> 0.9.0-1
-- added full support for non compressed sources
-- use current time if no version is available
-- extended regexp for version detection
-
-* Sun Sep 18 2011 Jan Gehring <jan.gehring at, gmail.com> 0.8.0-1
-- added windows support
-
-* Tue Sep 13 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.0-1
-- added sprocketize command
-- added coffeescript support
-- added sass support
-
-* Sun Aug 14 2011 Jan Gehring <jan.gehring at, gmail.com> 0.6.0-1
-- added yui compressor support
-- [Deploy::Symlink] added a default function for generate_deploy_directory the default awaits now files in the format: name-[0-9\._~]+.zip|tar\.gz|tar\.bz2|war
-- Added support to build .tar.gz packages
-
-* Tue Jul 05 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.2-1
-- added tab as an allowed property seperator
-- fixed another property parsing bug
-- enable/disable tomcat instances in mod_jk
-
-* Mon Jun 27 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.1-1
-- fixed template parsing in property files
-- strip windows lineending in property files
-
-* Mon Jun 13 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.0-1
-- set path to tomcat manager
-- standardization for function calls
-- allow = and : for seperator in templates file (Inject::Properties)
-- run hooks on sub extracts, too
-- first rpm
-
+* Tue Aug 21 2012 Jan Gehring <jan.gehring at, gmail.com> 0.10.0-1
+- updated package
