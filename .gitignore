@@ -9,8 +9,13 @@ debian/tmp
 debian/substvars
 pm_to_blib
 debian/*.log
+*.tmp
+*.old
 *.bak
 README
-*.tmp
-doc/html
+MYMETA.yml
+MYMETA.json
 create_pod.sh
+doc/bootstrap.pod
+doc/html
+*.txt

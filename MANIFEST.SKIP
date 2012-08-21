@@ -2,7 +2,6 @@
 .gitignore
 ^debian\/
 README.pod
-MANIFEST
 \..*sw.*
 .git
 blib
@@ -16,4 +15,6 @@ pm_toblib
 .*\.old$
 ^\.DS_*
 \.sh$
-\.tar
+MANIFEST\..*
+MYMETA.json
+MYMETA.yml
