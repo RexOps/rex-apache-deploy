@@ -93,7 +93,7 @@ sub inject {
 
    _find_and_parse_templates();
 
-   if(is_file("../$to")) {
+   if(is_file($to)) {
       if(exists $option->{"pre_pack_hook"}) {
          &{ $option->{"pre_pack_hook"} };
       }

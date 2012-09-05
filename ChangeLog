@@ -1,3 +1,6 @@
+2012-08-21 Jan Gehring <jan.gehring, gmail.com> (0.10.1)
+  * fixed a path calculation
+
 2012-08-21 Jan Gehring <jan.gehring, gmail.com> (0.10.0)
   * allow full pathname for inject
 
