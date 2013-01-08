@@ -213,7 +213,8 @@ This function builds your package. Currently only tar.gz packages are supported.
     build "my-web-app",
        path => "html",
        version => "1.0",
-       exclude => ["yuicompressor.jar", "foobar.html"];
+       exclude => ["yuicompressor.jar", "foobar.html"],
+       type => "tgz";
  };
 
 =cut
@@ -224,39 +225,25 @@ sub build {
       $name = basename(getcwd());
    }
 
-   my $dir = getcwd();
-
-   if(exists $option{path}) {
-      $dir = $option{path};
-   }
-
-   my $version = "";
-
-   if($APP_VERSION) {
-      $version = "-" . &$APP_VERSION();
-   }
-
-   if(exists $option{version}) {
-      $version = "-".$option{version};
+   if(! exists $option{version}) {
+      $option{version} = &$APP_VERSION();
    }
 
    my $old_dir = getcwd();
-   chdir($dir);
 
-   my $excludes = "";
+   my $type = $option{type} || "tgz";
 
-   if(exists $option{exclude}) {
-      $excludes = " --exclude " . join(" --exclude ", @{$option{exclude}});
+   my $klass = "Rex::Apache::Build::$type";
+   eval "use $klass";
+   if($@) {
+      die("Can't find build class for type: $type");
    }
 
-   Rex::Logger::info("Building: $name$version.tar.gz");
-   if($^O =~ m/^MSWin/i) {
-      run "tar -c $excludes --exclude \"$name-*.tar.gz\" --exclude \".*.sw*\" --exclude \"*~\" --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .";
-   }
-   else {
-      run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name$version.tar.gz .";
-   }
-   Rex::Logger::info("Your build is now available: $name$version.tar.gz");
+   Rex::Logger::debug("Using Buildclass: $klass");
+   $option{name} = $name;
+   my $build = $klass->new(%option);
+
+   $build->build;
 
    chdir($old_dir);
 }
