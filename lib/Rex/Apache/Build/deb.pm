@@ -58,6 +58,8 @@ sub build {
    file "temp-deb-build/control/md5sums",
       content => $self->get_md5sums;
 
+   $self->create_config_files;
+   $self->create_scripts;
 
    $self->package_data;
    $self->package_control;
@@ -72,6 +74,64 @@ sub build {
    chdir "..";
 
    rmdir "temp-deb-build";
+}
+
+sub create_config_files {
+   my ($self) = @_;
+
+   if($self->{config_files}) {
+      file "temp-deb-build/control/conffiles",
+         content => join("\n", @{ $self->{config_files} });
+   }
+}
+
+sub create_scripts {
+   my ($self) = @_;
+
+   if($self->{post_install}) {
+      my $post_install = $self->{post_install};
+      if(-f $post_install) {
+         $post_install = eval { local(@ARGV, $/) = ($post_install); <>; };
+      }
+
+      file "temp-deb-build/control/postinst",
+         content => $post_install,
+         mode    => 755;
+   }
+
+   if($self->{pre_install}) {
+      my $pre_install = $self->{pre_install};
+      if(-f $pre_install) {
+         $pre_install = eval { local(@ARGV, $/) = ($pre_install); <>; };
+      }
+
+      file "temp-deb-build/control/preinst",
+         content => $pre_install,
+         mode    => 755;
+   }
+
+   if($self->{post_uninstall}) {
+      my $post_uninstall = $self->{post_uninstall};
+      if(-f $post_uninstall) {
+         $post_uninstall = eval { local(@ARGV, $/) = ($post_uninstall); <>; };
+      }
+
+      file "temp-deb-build/control/postrm",
+         content => $post_uninstall,
+         mode    => 755;
+   }
+
+   if($self->{pre_uninstall}) {
+      my $pre_uninstall = $self->{pre_uninstall};
+      if(-f $pre_uninstall) {
+         $pre_uninstall = eval { local(@ARGV, $/) = ($pre_uninstall); <>; };
+      }
+
+      file "temp-deb-build/control/prerm",
+         content => $pre_uninstall,
+         mode    => 755;
+   }
+
 }
 
 sub package_data {

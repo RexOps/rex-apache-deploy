@@ -40,14 +40,15 @@ for my $name (qw/
                   description
                   section
                   url
-                  postinstall
-                  preinstall
-                  postuninstall
-                  preuninstall
+                  post_install
+                  pre_install
+                  post_uninstall
+                  pre_uninstall
                   exclude
                   maintainer
                   priority
                   name
+                  config_files
                 /) {
    no strict 'refs';
    *{__PACKAGE__ . "::$name"} = sub {
