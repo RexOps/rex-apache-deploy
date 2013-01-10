@@ -9,15 +9,27 @@ package Rex::Apache::Build::Base;
 use strict;
 use warnings;
 
+use Data::Dumper;
+use Rex::Commands::Gather;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
    my $self = { @_ };
 
-   $self->{maintainer}  ||= ($ENV{USER} || "unknown");
-   $self->{section}     ||= "none";
-   $self->{url}         ||= "http://example.tld/";
-   $self->{description} ||= "No Description";
+   my %sys_info = get_system_information();
+
+   $self->{maintainer}   ||= ($ENV{USER} || "unknown");
+   $self->{arch}         ||= $sys_info{architecture},
+   $self->{section}      ||= "none";
+   $self->{url}          ||= "http://example.tld/";
+   $self->{version}      ||= "1.0";
+   $self->{description}  ||= "No Description";
+   $self->{depends}      ||= [];
+   $self->{provides}     ||= [];
+   $self->{conflicts}    ||= [];
+   $self->{config_files} ||= [];
+
 
    bless($self, $proto);
 
@@ -49,6 +61,8 @@ for my $name (qw/
                   priority
                   name
                   config_files
+                  file_user
+                  file_group
                 /) {
    no strict 'refs';
    *{__PACKAGE__ . "::$name"} = sub {

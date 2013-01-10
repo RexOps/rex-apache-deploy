@@ -29,7 +29,6 @@ sub new {
    bless($self, $proto);
 
    $self->{priority} ||= "optional";
-   $self->{arch}     ||= "all";
 
    return $self;
 }
