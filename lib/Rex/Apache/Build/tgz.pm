@@ -47,16 +47,20 @@ sub build {
 
    chdir($dir);
 
-   Rex::Logger::info("Building: $name-$version.tar.gz");
+   my $package_name = "$name-$version.tar.gz";
+
+   Rex::Logger::info("Building: $package_name");
    if($^O =~ m/^MSWin/i) {
-      run "tar -c $excludes --exclude \"$name-*.tar.gz\" --exclude \".*.sw*\" --exclude \"*~\" --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name-$version.tar.gz .";
+      run "tar -c $excludes --exclude \"$name-*.tar.gz\" --exclude \".*.sw*\" --exclude \"*~\" --exclude Rexfile.lock --exclude Rexfile --exclude $package_name -z -f $old_dir/$package_name .";
    }
    else {
-      run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $name$version.tar.gz -z -f $old_dir/$name-$version.tar.gz .";
+      run "tar -c $excludes --exclude '$name-*.tar.gz' --exclude '.*.sw*' --exclude '*~' --exclude Rexfile.lock --exclude Rexfile --exclude $package_name -z -f $old_dir/$package_name .";
    }
    Rex::Logger::info("Your build is now available: $name-$version.tar.gz");
 
    chdir($old_dir);
+
+   return $package_name;
 }
 
 1;

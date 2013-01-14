@@ -59,6 +59,8 @@ sub build {
 
    my $arch = $self->arch;
    cp "temp-rpm-build/$arch/*.rpm", ".";
+
+   return "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
 }
 
 sub find_files {

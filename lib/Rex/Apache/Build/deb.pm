@@ -69,10 +69,13 @@ sub build {
    chdir "temp-deb-build";
 
    my $arch = $self->{arch};
-   run "ar -qc ../${name}_${version}_${arch}.deb debian-binary control.tar.gz data.tar.gz";
+   my $package_name = "${name}_${version}_${arch}.deb";
+   run "ar -qc ../$package_name debian-binary control.tar.gz data.tar.gz";
    chdir "..";
 
    rmdir "temp-deb-build";
+
+   return $package_name;
 }
 
 sub create_config_files {
