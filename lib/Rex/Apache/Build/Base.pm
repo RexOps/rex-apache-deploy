@@ -25,6 +25,7 @@ sub new {
    $self->{url}          ||= "http://example.tld/";
    $self->{version}      ||= "1.0";
    $self->{description}  ||= "No Description";
+   $self->{target}       ||= "linux";
    $self->{depends}      ||= [];
    $self->{provides}     ||= [];
    $self->{conflicts}    ||= [];
@@ -38,7 +39,7 @@ sub new {
 
 for my $name (qw/
                   path
-                  prefix
+                  source
                   release
                   epoch
                   version
@@ -49,6 +50,7 @@ for my $name (qw/
                   conflicts
                   provides
                   arch
+                  target
                   description
                   section
                   url
@@ -76,6 +78,16 @@ for my $name (qw/
 
    };
    use strict;
+}
+
+sub prefix {
+   my ($self, $prefix) = @_;
+
+   if($prefix) {
+      $self->{prefix} = $prefix;
+   }
+
+   return $self->{prefix} || $self->{path};
 }
 
 sub build {

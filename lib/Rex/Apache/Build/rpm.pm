@@ -33,6 +33,7 @@ sub new {
    $self->{license}    ||= "unknown";
    $self->{file_user}  ||= "root";
    $self->{file_group} ||= "root";
+   $self->{release}    ||= 1;
 
    return $self;
 }
@@ -44,8 +45,11 @@ sub build {
 
    mkdir "temp-rpm-build";
    mkdir "temp-rpm-build/tree";
+   mkdir "temp-rpm-build/tree" . $self->prefix;
 
    my @dirs  = $self->find_dirs;
+   push(@dirs, $self->prefix);
+
    my @files = $self->find_files;
 
    file "temp-rpm-build/$name.spec",
@@ -53,12 +57,15 @@ sub build {
 
    chdir "temp-rpm-build";
 
-   run "/opt/local/bin/rpmbuild --buildroot=" . getcwd() . "/tree -bb $name.spec";
+   my $rpmbuild_path = Rex::Config->get("rpmbuild") || "rpmbuild";
+   run "$rpmbuild_path --buildroot=" . getcwd() . "/tree -bb $name.spec";
 
    chdir "..";
 
    my $arch = $self->arch;
    cp "temp-rpm-build/$arch/*.rpm", ".";
+
+   rmdir "temp-rpm-build";
 
    return "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
 }
@@ -68,7 +75,7 @@ sub find_files {
 
    my @ret;
 
-   my @dirs = ($self->{path});
+   my @dirs = ($self->{source});
    for my $dir (@dirs) {
       opendir(my $dh, $dir) or die($!);
       while(my $entry = readdir($dh)) {
@@ -91,7 +98,7 @@ sub find_files {
       @ret = grep { $_->[0] !~ m/$conf/ } @ret;
    }
 
-   my $top = $self->path . "/";
+   my $top = $self->source . "/";
    map { $_->[1] =~ s/^$top// } @ret;
 
    Rex::Logger::debug("==== files ====");
@@ -105,7 +112,7 @@ sub find_dirs {
 
    my @ret;
 
-   my @dirs = ($self->{path});
+   my @dirs = ($self->{source});
    for my $dir (@dirs) {
       opendir(my $dh, $dir) or die($!);
       while(my $entry = readdir($dh)) {
@@ -123,7 +130,7 @@ sub find_dirs {
       closedir($dh);
    }
 
-   my $top = $self->path;
+   my $top = $self->source;
    map { s/^$top//; $_ = $self->prefix . $_ } @ret;
 
    Rex::Logger::debug("==== directories ====");
@@ -142,6 +149,8 @@ __DATA__
 # bold copied from fpm
 
 %define _rpmdir <%= $::cur_dir %>/temp-rpm-build
+
+%define _target_os <%= $::pkg->target %>
 
 <% for (qw/prep build install clean/) { %>
 %define __spec_<%= $_ %>_post true

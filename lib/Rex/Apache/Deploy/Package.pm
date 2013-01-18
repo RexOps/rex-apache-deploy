@@ -11,8 +11,6 @@ use warnings;
 
 use Rex::Apache::Build;
 
-require Exporter;
-use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(deploy);
@@ -20,22 +18,26 @@ use vars qw(@EXPORT);
 sub deploy {
    my ($name, %option) = @_;
 
-   my $version = $option{version};
-
-   my $package_name;
-   if(-f "$name-$version.tar.gz") {
-      # file not here, build it
-      $package_name = build($name, %option);
-   }
-
    my $klass = "Rex::Apache::Deploy::Package::" . $option{type};
    eval "use $klass";
    if($@) {
       die("Error loading deploy class of thype $option{type}\n");
    }
 
+   $option{name} = $name;
+
    my $deploy = $klass->new(%option);
-   $deploy->deploy($package_name);
+   $deploy->deploy($name, %option);
 }
 
+
+sub import {
+
+   no strict 'refs';
+   for my $func (@EXPORT) {
+      Rex::Logger::debug("Registering main::$func");
+      *{"$_[1]::$func"} = \&$func;
+   }
+
+}
 1;

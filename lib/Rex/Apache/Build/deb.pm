@@ -28,6 +28,10 @@ sub new {
 
    bless($self, $proto);
 
+   if($self->{arch} eq "x86_64") {
+      $self->{arch} = "amd64";
+   }
+
    $self->{priority} ||= "optional";
 
    return $self;
@@ -152,12 +156,13 @@ sub package_control {
    chdir "../../";
 }
 
+
 sub copy_files_to_tmp {
    my ($self) = @_;
 
    my $prefix = $self->prefix || ".";
    mkdir "temp-deb-build/tree/$prefix";
-   cp $self->{path} . "/*", "temp-deb-build/tree/$prefix";
+   cp $self->{source} . "/*", "temp-deb-build/tree/$prefix";
 }
 
 sub get_md5sums {
