@@ -30,6 +30,8 @@ sub new {
    $self->{provides}     ||= [];
    $self->{conflicts}    ||= [];
    $self->{config_files} ||= [];
+   $self->{exclude}      ||= [qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}];
+   $self->{source}       ||= ".";
 
 
    bless($self, $proto);

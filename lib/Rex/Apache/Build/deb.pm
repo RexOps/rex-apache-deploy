@@ -162,7 +162,38 @@ sub copy_files_to_tmp {
 
    my $prefix = $self->prefix || ".";
    mkdir "temp-deb-build/tree/$prefix";
-   cp $self->{source} . "/*", "temp-deb-build/tree/$prefix";
+
+   my @dirs = ($self->{source});
+
+   for my $dir (@dirs) {
+      opendir(my $dh, $dir) or die($!);
+
+      DIR_ENTRY: while(my $entry = readdir($dh)) {
+         next if ($entry eq "." or $entry eq ".." or $entry eq "temp-deb-build");
+
+         for my $ex (@{ $self->exclude }) {
+            if($entry =~ m/$ex/) {
+               next DIR_ENTRY;
+            }
+         }
+
+         my $new_dir = "$dir/$entry";
+         $new_dir =~ s/^$dirs[0]//;
+         $new_dir =~ s/^\///;
+
+         if(-d "$dir/$entry") {
+            mkdir "temp-deb-build/tree$prefix/$new_dir";
+
+            push(@dirs, "$dir/$entry");
+            next DIR_ENTRY;
+         }
+
+         cp "$dir/$entry", "temp-deb-build/tree$prefix/$new_dir";
+      } # DIR_ENTRY
+
+      closedir($dh);
+   }
+
 }
 
 sub get_md5sums {

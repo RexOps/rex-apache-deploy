@@ -39,9 +39,15 @@ use vars qw(@EXPORT $deploy_to $document_root $generate_deploy_directory);
 ############ deploy functions ################
 
 sub deploy {
-   my ($file, @option) = @_;
+   my ($file, %option) = @_;
 
-   my $options = { @option };
+   if(! %option) {
+      if(Rex::Config->get("package_option")) {
+         %option = %{ Rex::Config->get("package_option") };
+      }
+   }
+
+   my $options = \%option;
 
    unless($file) {
       # if no file is given, use directory name

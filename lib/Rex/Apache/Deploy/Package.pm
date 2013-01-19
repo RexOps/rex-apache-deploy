@@ -24,6 +24,12 @@ sub deploy {
       die("Error loading deploy class of thype $option{type}\n");
    }
 
+   if(! %option) {
+      if(Rex::Config->get("package_option")) {
+         %option = %{ Rex::Config->get("package_option") };
+      }
+   }
+
    $option{name} = $name;
 
    my $deploy = $klass->new(%option);

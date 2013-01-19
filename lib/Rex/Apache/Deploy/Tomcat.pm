@@ -33,10 +33,15 @@ use vars qw(@EXPORT $context_path);
 ############ deploy functions ################
 
 sub deploy {
+   my ($file, %option) = @_;
 
-   my ($file, @option) = @_;
+   if(! %option) {
+      if(Rex::Config->get("package_option")) {
+         %option = %{ Rex::Config->get("package_option") };
+      }
+   }
 
-   my $options = { @option };
+   my $options = \%option;
 
    no strict;
    no warnings;

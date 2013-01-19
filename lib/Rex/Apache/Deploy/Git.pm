@@ -17,6 +17,12 @@ use vars qw(@EXPORT);
 sub deploy {
    my ($commit, %option) = @_;
 
+   if(! %option) {
+      if(Rex::Config->get("package_option")) {
+         %option = %{ Rex::Config->get("package_option") };
+      }
+   }
+
    my $commit_to_deploy = $commit;
    my $repo_path        = $option{path};
    my $force            = ($option{force}?"-f":"");

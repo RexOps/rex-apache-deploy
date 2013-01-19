@@ -227,6 +227,12 @@ sub build {
       $name = basename(getcwd());
    }
 
+   if(! %option) {
+      if(Rex::Config->get("package_option")) {
+         %option = %{ Rex::Config->get("package_option") };
+      }
+   }
+
    if(! exists $option{version}) {
       $option{version} = &$APP_VERSION();
    }
