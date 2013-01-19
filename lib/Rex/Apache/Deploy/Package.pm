@@ -9,6 +9,8 @@ package Rex::Apache::Deploy::Package;
 use strict;
 use warnings;
 
+use Cwd qw(getcwd);
+use File::Basename;
 use Rex::Apache::Build;
 
 use vars qw(@EXPORT);
@@ -18,16 +20,21 @@ use vars qw(@EXPORT);
 sub deploy {
    my ($name, %option) = @_;
 
-   my $klass = "Rex::Apache::Deploy::Package::" . $option{type};
-   eval "use $klass";
-   if($@) {
-      die("Error loading deploy class of thype $option{type}\n");
+   unless($name) {
+      # if no file is given, use directory name
+      $name = basename(getcwd());
    }
 
    if(! %option) {
       if(Rex::Config->get("package_option")) {
          %option = %{ Rex::Config->get("package_option") };
       }
+   }
+
+   my $klass = "Rex::Apache::Deploy::Package::" . $option{type};
+   eval "use $klass";
+   if($@) {
+      die("Error loading deploy class of thype $option{type}\n");
    }
 
    $option{name} = $name;

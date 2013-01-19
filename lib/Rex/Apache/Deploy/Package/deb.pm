@@ -48,7 +48,18 @@ sub deploy {
 
    run "dpkg -i /tmp/$package_name";
    if($? != 0) {
-      die("Error installing $package_name");
+      # try to install deps
+      run "apt-get -y -f install";
+      if($? != 0) {
+         unlink "/tmp/$package_name";
+         die("Error installing $package_name");
+      }
+
+      my $pkg = Rex::Pkg->get;
+      if(! $pkg->is_installed($self->name)) {
+         unlink "/tmp/$package_name";
+         die("Error installing $package_name");
+      }
    }
 
    Rex::Logger::info("Package $package_name installed.");

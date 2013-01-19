@@ -67,7 +67,10 @@ sub build {
 
    rmdir "temp-rpm-build";
 
-   return "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
+   my $build_file = "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
+   Rex::Logger::info("Your build is now available: $build_file");
+
+   return $build_file;
 }
 
 sub find_files {

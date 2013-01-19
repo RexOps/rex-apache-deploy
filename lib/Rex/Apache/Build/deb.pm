@@ -79,6 +79,8 @@ sub build {
 
    rmdir "temp-deb-build";
 
+   Rex::Logger::info("Your build is now available: $package_name");
+
    return $package_name;
 }
 
@@ -96,7 +98,7 @@ sub create_scripts {
 
    if($self->{post_install}) {
       my $post_install = $self->{post_install};
-      if(-f $post_install) {
+      if($post_install !~ m/\n/sim && -f $post_install) {
          $post_install = eval { local(@ARGV, $/) = ($post_install); <>; };
       }
 
@@ -107,7 +109,7 @@ sub create_scripts {
 
    if($self->{pre_install}) {
       my $pre_install = $self->{pre_install};
-      if(-f $pre_install) {
+      if($pre_install !~ m/\n/sim && -f $pre_install) {
          $pre_install = eval { local(@ARGV, $/) = ($pre_install); <>; };
       }
 
@@ -118,7 +120,7 @@ sub create_scripts {
 
    if($self->{post_uninstall}) {
       my $post_uninstall = $self->{post_uninstall};
-      if(-f $post_uninstall) {
+      if($post_uninstall !~ m/\n/sim && -f $post_uninstall) {
          $post_uninstall = eval { local(@ARGV, $/) = ($post_uninstall); <>; };
       }
 
@@ -129,7 +131,7 @@ sub create_scripts {
 
    if($self->{pre_uninstall}) {
       my $pre_uninstall = $self->{pre_uninstall};
-      if(-f $pre_uninstall) {
+      if($pre_uninstall !~ m/\n/sim && -f $pre_uninstall) {
          $pre_uninstall = eval { local(@ARGV, $/) = ($pre_uninstall); <>; };
       }
 
