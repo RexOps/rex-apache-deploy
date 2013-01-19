@@ -148,6 +148,8 @@ Run a yui command.
 sub yui {
    my ($action, @data) = @_;
 
+   $yui_path ||= "yuicompressor.jar";
+
    unless(-f $yui_path) {
       die("No yuicompressor.jar found. Please download this file and define its location with yui_path '/path/to/yuicompress.jar';");
    }
@@ -255,6 +257,11 @@ Get the version out of a file.
 =cut
 sub get_version_from {
    my ($file, $regex) = @_;
+
+   if(ref($file) eq "CODE") {
+      $APP_VERSION = $file;
+      return;
+   }
 
    $APP_VERSION = sub {
 

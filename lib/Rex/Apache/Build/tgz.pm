@@ -22,6 +22,8 @@ sub new {
 
    bless($self, $proto);
 
+   $self->{exclude} = [".git", ".svn", ".*.sw*", "*~", "yuicompressor.jar", "._yuicompressor.jar"];
+
    return $self;
 }
 
