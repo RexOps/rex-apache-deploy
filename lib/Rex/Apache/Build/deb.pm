@@ -33,6 +33,9 @@ sub new {
    }
 
    $self->{priority} ||= "optional";
+   $self->{exclude}  ||= [];
+
+   push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}, qr{\.deb$});
 
    return $self;
 }

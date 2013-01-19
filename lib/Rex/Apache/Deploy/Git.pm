@@ -17,6 +17,17 @@ use vars qw(@EXPORT);
 sub deploy {
    my ($commit, %option) = @_;
 
+   if(! $commit) {
+      my %task_args = Rex::Args->get;
+      if(exists $task_args{commit}) {
+         $commit = $task_args{commit};
+      }
+      else {
+         print "Usage: rex \$task --commit=git-hash\n";
+         die("You have to give the commit you wish to deploy.");
+      }
+   }
+
    if(! %option) {
       if(Rex::Config->get("package_option")) {
          %option = %{ Rex::Config->get("package_option") };

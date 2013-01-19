@@ -34,6 +34,9 @@ sub new {
    $self->{file_user}  ||= "root";
    $self->{file_group} ||= "root";
    $self->{release}    ||= 1;
+   $self->{exclude}    ||= [];
+
+   push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}, qr{\.rpm$});
 
    return $self;
 }
