@@ -9,8 +9,14 @@ package Rex::Apache::Deploy::Package::tgz;
 use strict;
 use warnings;
 
+use Rex::Apache::Build;
+use Rex::Commands;
+use Rex::Commands::Upload;
+use Rex::Commands::Run;
+use Rex::Commands::Fs;
 use Rex::Apache::Deploy::Package::Base;
 use base qw(Rex::Apache::Deploy::Package::Base);
+
 
 sub new {
    my $that = shift;
@@ -23,16 +29,25 @@ sub new {
 }
 
 sub deploy {
-   my ($package_name) = @_;
+   my ($self, $package_name, %option) = @_;
 
-   if(! $package_name) {
-      $package_name = $self->name . "-" . $self->version . ".tar.gz";
-   }
+   $package_name = $self->name . "-" . $self->version . ".tar.gz";
+
+   LOCAL {
+      if(! -f $package_name) {
+         build($self->name, %option);
+      }
+   };
 
    upload $package_name, "/tmp";
 
-   my $to = $self->{to};
+   my $to = $self->prefix;
    run "tar -C $to -xzf /tmp/$package_name";
+   if($? != 0) {
+      die("Error installing $package_name");
+   }
+
+   Rex::Logger::info("Package $package_name installed.");
 
    unlink "/tmp/$package_name";
 }

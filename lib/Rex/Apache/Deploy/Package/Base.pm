@@ -28,7 +28,8 @@ sub new {
 }
 
 for my $name (qw/
-                  prefix
+                  path
+                  source
                   release
                   epoch
                   version
@@ -49,6 +50,16 @@ for my $name (qw/
 
    };
    use strict;
+}
+
+sub prefix {
+   my ($self, $prefix) = @_;
+
+   if($prefix) {
+      $self->{prefix} = $prefix;
+   }
+
+   return $self->{prefix} || $self->{path};
 }
 
 1;

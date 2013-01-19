@@ -41,8 +41,8 @@ sub build {
 
    my $dir = getcwd();
 
-   if(exists $self->{path}) {
-      $dir = $self->{path};
+   if(exists $self->{source}) {
+      $dir = $self->{source};
    }
 
    chdir($dir);
