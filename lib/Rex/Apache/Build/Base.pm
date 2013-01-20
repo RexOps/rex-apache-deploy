@@ -32,7 +32,7 @@ sub new {
    $self->{config_files} ||= [];
 
    $self->{exclude}      ||= [];
-   push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$});
+   push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}, qr{^tmp$}, qr{\.cache$});
 
    $self->{source}       ||= ".";
 
