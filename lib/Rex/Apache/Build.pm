@@ -40,7 +40,7 @@ With this module you can prepare your WebApp for deployment.
     build;
         
     build "webapp",
-      path => "webapp/",
+      source  => "webapp/",
       version => "1.0";
  };
 

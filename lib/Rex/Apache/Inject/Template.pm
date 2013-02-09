@@ -32,6 +32,8 @@ my $work_dir = getcwd;
 sub inject {
    my ($to, @options) = @_;
 
+   my $start_dir = getcwd;
+
    my $option = { @options };
 
    my ($cmd1, $cmd2);
@@ -93,7 +95,11 @@ sub inject {
 
    _find_and_parse_templates();
 
+   my $cur_dir = getcwd;
+   chdir $start_dir;
    if(is_file($to)) {
+      chdir $cur_dir;
+
       if(exists $option->{"pre_pack_hook"}) {
          &{ $option->{"pre_pack_hook"} };
       }
@@ -105,7 +111,7 @@ sub inject {
       }
    }
 
-   chdir("..");
+   chdir $start_dir;
 
    if(is_file($to)) {
       system("rm -rf tmp");

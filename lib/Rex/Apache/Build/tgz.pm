@@ -18,7 +18,6 @@ With this module you can build TGZ packages to distribute your application.
     type    => "tgz",
     version => "1.0",
     source  => "/path/to/your/software",
-    path    => "/path/to/deploy/target",
     # below this, it is all optional
     exclude => [qw/file1 file2/];
 
@@ -33,6 +32,7 @@ use warnings;
 
 use Cwd qw(getcwd);
 use Rex -base;
+use Data::Dumper;
 
 use Rex::Apache::Build::Base;
 use base qw(Rex::Apache::Build::Base);
@@ -43,6 +43,12 @@ sub new {
    my $self = $proto->SUPER::new(@_);
 
    bless($self, $proto);
+
+   # compatibility for < 0.11
+   if($self->{source} eq ".") {
+      $self->{source} = undef;
+      delete $self->{source};
+   }
 
    $self->{exclude} = [".git", ".svn", ".*.sw*", "*~", "yuicompressor.jar", "._yuicompressor.jar"];
 
@@ -70,6 +76,13 @@ sub build {
 
    my $dir = getcwd();
 
+   # compatibility for < 0.11 versions
+   if(exists $self->{path}) {
+      $dir = $self->{path};
+   }
+
+   # if source is present, this will overwrite path parameter
+   # because path can also be used in deploy() with an other meaning (prefix)
    if(exists $self->{source}) {
       $dir = $self->{source};
    }
