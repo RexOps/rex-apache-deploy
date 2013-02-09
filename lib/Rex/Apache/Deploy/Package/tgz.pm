@@ -3,7 +3,31 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Apache::Deploy::tgz - Deploy tgz package
+
+=head1 DESCRIPTION
+
+With this module you can deploy a TGZ packages.
+
+If the package is not build yet, it will pass all the arguments to the build() function and executes the build on the local machine.
+
+=head1 SYNOPSIS
+
+ deploy "my-software.tgz";
+  
+ deploy "my-software",
+    type    => "rpm",
+    version => "1.0",
+    # below this, it is all optional
+    source  => "html",
+    path    => "/var/www/html";
+
+=cut
+
+
 package Rex::Apache::Deploy::Package::tgz;
 
 use strict;
@@ -31,11 +55,14 @@ sub new {
 sub deploy {
    my ($self, $package_name, %option) = @_;
 
-   $package_name = $self->name . "-" . $self->version . ".tar.gz";
 
    LOCAL {
       if(! -f $package_name) {
-         build($self->name, %option);
+         $package_name = $self->name . "-" . $self->version . ".tar.gz";
+
+         if(! -f $package_name) {
+            build($self->name, %option);
+         }
       }
    };
 

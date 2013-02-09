@@ -3,7 +3,29 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Apache::Build::tgz - Build tgz packages
+
+=head1 DESCRIPTION
+
+With this module you can build TGZ packages to distribute your application.
+
+=head1 SYNOPSIS
+
+ build "my-software",
+    type    => "tgz",
+    version => "1.0",
+    source  => "/path/to/your/software",
+    path    => "/path/to/deploy/target",
+    # below this, it is all optional
+    exclude => [qw/file1 file2/];
+
+
+=cut
+
+
 package Rex::Apache::Build::tgz;
 
 use strict;

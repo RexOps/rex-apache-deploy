@@ -31,10 +31,25 @@ sub deploy {
       }
    }
 
+   if(! exists $option{type}) {
+      if($name =~ m/\.deb$/) {
+         $option{type} = "deb";
+      }
+      elsif($name =~ m/\.rpm$/) {
+         $option{type} = "rpm";
+      }
+      elsif($name =~ m/(\.tgz|\.gz)$/) {
+         $option{type} = "tgz";
+      }
+      else {
+         $option{type} = "tgz";
+      }
+   }
+
    my $klass = "Rex::Apache::Deploy::Package::" . $option{type};
    eval "use $klass";
    if($@) {
-      die("Error loading deploy class of thype $option{type}\n");
+      die("Error loading deploy class of type $option{type}\n");
    }
 
    $option{name} = $name;

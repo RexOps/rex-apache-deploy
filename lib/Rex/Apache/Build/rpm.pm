@@ -4,6 +4,45 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Apache::Build::rpm - Build rpm packages
+
+=head1 DESCRIPTION
+
+With this module you can build RedHat packages to distribute your application.
+
+=head1 SYNOPSIS
+
+ build "my-software",
+    type    => "rpm",
+    version => "1.0",
+    source  => "/path/to/your/software",
+    path    => "/path/to/deploy/target",
+    # below this, it is all optional
+    description    => "some description of your package",
+    url            => "website of the package",
+    depends        => [qw/httpd perl/],
+    release        => 1,
+    epoch          => 1,
+    vendor         => "some vendor",
+    license        => "your license for ex. GPL2",
+    section        => "some/section",
+    conflicts      => [qw/somepkg/],
+    provides       => "some-package-name",
+    arch           => "x86_64",
+    target         => "linux / the platform",
+    post_install   => "filename or script to run after installation",
+    pre_install    => "filename or script to run before installation",
+    post_uninstall => "filename or script to run after uninstall",
+    pre_uninstall  => "filename or script to run before uninstall",
+    exclude        => [qw/file1 file2/],
+    maintainer     => "your name",
+    config_files   => [qw/special files for configuration mostly for etc directory/];
+
+
+=cut
+
 package Rex::Apache::Build::rpm;
 
 use strict;
@@ -29,7 +68,6 @@ sub new {
 
    bless($self, $proto);
 
-   $self->{priority}   ||= "optional";
    $self->{license}    ||= "unknown";
    $self->{file_user}  ||= "root";
    $self->{file_group} ||= "root";

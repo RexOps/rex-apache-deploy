@@ -50,7 +50,6 @@ for my $name (qw/
                   version
                   vendor
                   license
-                  category
                   depends
                   conflicts
                   provides
