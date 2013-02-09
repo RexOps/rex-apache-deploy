@@ -58,7 +58,12 @@ sub build {
 
    my $excludes = "";
    if(exists $self->{exclude}) {
-      $excludes = " --exclude " . join(" --exclude ", @{$self->{exclude}});
+      if($^O =~ m/^MSWin/) {
+         $excludes = " --exclude \"" . join("\" --exclude \"", @{$self->{exclude}}) . "\"";
+      }
+      else {
+         $excludes = " --exclude '" . join("' --exclude '", @{$self->{exclude}}) . "'";
+      }
    }
 
    my $version = $self->version;
