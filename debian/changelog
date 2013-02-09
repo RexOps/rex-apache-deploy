@@ -1,3 +1,8 @@
+rex-apache-deploy (0.11.0) unstable; urgency=low
+  * updated package
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 9 Feb 2013 15:45:00 +0200
+
 rex-apache-deploy (0.10.1) unstable; urgency=low
   * updated package
 
