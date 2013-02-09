@@ -150,6 +150,8 @@ sub import {
    my ($call_class) = caller;
    return unless $call_class;
 
+   return unless $_[1];
+
    die("Invalid input format") unless($_[1] =~ m/^[a-z0-9_]+$/i);
 
    no strict 'refs';
