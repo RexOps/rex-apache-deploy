@@ -3,7 +3,40 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Apache::Deploy::Git - Deploy applications with Git
+
+=head1 DESCRIPTION
+
+This module gives you a simple interface to Git based deployments. It uses I<git push> to upload a given commit to the server.
+
+=head1 SYNOPSIS
+
+ use Rex::Apache::Deploy qw/Git/;
+    
+ task "deploy", "server1", "server2", sub {
+    my $param = shift;
+       
+    deploy $param->{commit},
+       path   => "/var/www",
+       switch => TRUE;
+ };
+    
+ #bash# rex deploy --commit=385816
+    
+ task "rollback", "server1", "server2", sub {
+    my $param = shift;
+        
+    switch_to_version $param->{commit};
+ };
+    
+ #bash# rex rollback --commit=138274
+
+
+=cut
+
 package Rex::Apache::Deploy::Git;
 
 use strict;

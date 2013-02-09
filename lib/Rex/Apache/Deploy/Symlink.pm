@@ -4,15 +4,43 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Apache::Deploy::Symlink;
+=head1 NAME
 
-=begin
+Rex::Apache::Deploy::Symlink - Deploy application and symlink to live
 
-=head2 SYNOPSIS
+=head1 DESCRIPTION
 
-This is a (R)?ex module to ease the deployments of PHP, Perl or other languages.
+With this module you can deploy an application to a special folder and after that you can symlink it to the document root.
+
+=head1 SYNOPSIS
+
+ generate_deploy_directory {
+    my ($file) = @_;
+    $file =~ m/(\d+\.\d+)/;
+    return $1;
+ };
+   
+ deploy_to "/data/myapp";
+ document_root "/var/www/html";
+    
+ task "dodeploy", "server1", sub {
+    deploy "myapp-1.2.tar.gz";
+ };
+   
+ task "dodeploy", "server1", sub {
+    deploy "myapp",
+       version => "1.2";
+ };
+
+=head1 FUNCTIONS
+
+=over 4
 
 =cut
+
+
+
+package Rex::Apache::Deploy::Symlink;
 
 use strict;
 use warnings;
@@ -37,6 +65,22 @@ use vars qw(@EXPORT $deploy_to $document_root $generate_deploy_directory);
                list_versions switch_to_version);
 
 ############ deploy functions ################
+
+=item deploy($file, %option)
+
+This function will do the deployment. It uploads the file to the target server and extract it to the directory given by I<deploy_to> concatenated with the return value of I<generate_deploy_directory>.
+
+ task "dodeploy", "server1", sub {
+    deploy "myapp-1.2.tar.gz";
+ };
+   
+ task "dodeploy", "server1", sub {
+    deploy "myapp",
+       version => "1.2";
+ };
+
+
+=cut
 
 sub deploy {
    my ($file, %option) = @_;
@@ -120,9 +164,27 @@ sub deploy {
    unlink "/tmp/$rnd_file" . _get_ext($file);
 }
 
+=item list_versions
+
+This function returns all available versions from the directory defined by I<deploy_to> as an array.
+
+=cut
+
 sub list_versions {
    return grep { ! /^\./ } list_files($deploy_to);
 }
+
+=item switch_to_version($new_version)
+
+This function switches to the given version.
+
+ task "switch", "server1", sub {
+    my $param = shift;
+      
+    switch_to_version $param->{version};
+ };
+
+=cut
 
 sub switch_to_version {
    my ($new_version) = @_;
@@ -132,6 +194,12 @@ sub switch_to_version {
 
    run "ln -snf $deploy_to/$new_version $document_root";
 }
+
+=item get_live_version
+
+This function returns the current live version.
+
+=cut
 
 sub get_live_version {
    my $link = eval {
@@ -164,15 +232,48 @@ sub get_deploy_directory_for {
    return $deploy_dir;
 }
 
+=item deploy_to($directory)
+
+This function sets the directory where the uploaded archives should be extracted. This is not the document root of your webserver.
+
+ deploy_to "/data/myapp";
+
+=cut
+
 sub deploy_to {
    $deploy_to = shift;
 }
+
+=item document_root($doc_root)
+
+This function sets the document root of your webserver. This will be a symlink to the deployed application.
+
+=cut
 
 sub document_root {
    $document_root = shift;
 }
 
-sub generate_deploy_directory {
+=item generate_deploy_directory(sub{})
+
+If you need a special directory naming of your uploaded version you can define it with this function.
+
+The default function is:
+
+ sub {
+    my ($file) = @_;
+    if($file =~ m/-([0-9\._~\-]+)\.(zip|tar\.gz|war|tar\.bz2|jar)$/) {
+       return $1;
+    }
+    else {
+       return "" . time;
+    }
+ };
+
+
+=cut
+
+sub generate_deploy_directory(&) {
    $generate_deploy_directory = shift;
 }
 
@@ -234,5 +335,9 @@ sub import {
    }
 
 }
+
+=back
+
+=cut
 
 1;

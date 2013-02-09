@@ -4,15 +4,34 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Apache::Deploy::Tomcat;
+=head1 NAME
 
-=begin
+Rex::Apache::Deploy::Tomcat - Deploy application to tomcat 6.
 
-=head2 SYNOPSIS
+=head1 DESCRIPTION
 
-This is a (R)?ex module to ease the deployments of PHP, Perl or other languages.
+With this module you can deploy WAR archives to Tomcat. Currently it works with Tomcat 6.
+
+=head1 SYNOPSIS
+
+ use Rex::Apache::Deploy qw/Tomcat/;
+   
+ context_path "/myapp";
+    
+ task "dodeploy", "tc01", "tc02", sub {
+    deploy "myapp.war",
+       username => "manager",
+       password => "manager",
+       port     => 8080;
+ };
+
+=head1 FUNCTIONS
+
+=over 4
 
 =cut
+
+package Rex::Apache::Deploy::Tomcat;
 
 use strict;
 use warnings;
@@ -32,6 +51,21 @@ use vars qw(@EXPORT $context_path);
 
 ############ deploy functions ################
 
+=item deploy($file, %option)
+
+This function deploys the given WAR archive. For that it will connect to the Tomcat manager. You have to define username and password for the Tomcat manager in the %option hash. If the Tomcat manager isn't available under its default location /manager you can also define the location with the I<manager_url> option.
+
+ task "dodeploy", "tc01", "tc02", sub {
+    deploy "myapp.war",
+       username     => "manager",
+       password     => "manager",
+       manager_url  => "_manager",
+       port         => 8080,
+       context_path => "/foo";
+ };
+
+
+=cut
 sub deploy {
    my ($file, %option) = @_;
 
@@ -178,6 +212,13 @@ sub _do_action {
 
 ############ configuration functions #############
 
+=item context_path($path)
+
+This function sets the context path for the application that gets deployed. This is a global setting. If you want to specify a custom context path for your application you can also do this as an option for the I<deploy> function.
+
+ context_path "/myapp";
+
+=cut
 sub context_path {
    $context_path = shift;
 }
@@ -193,5 +234,9 @@ sub import {
    }
 
 }
+
+=back
+
+=cut
 
 1;
