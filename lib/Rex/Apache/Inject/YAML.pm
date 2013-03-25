@@ -91,6 +91,11 @@ sub inject {
    }
 
    run $cmd2;
+   if($? != 0) {
+      chdir("..");
+      system("rm -rf tmp");
+      die("Can't re-pack archive. Please check permissions. Command was: $cmd2");
+   }
 
    if(exists $option->{"post_pack_hook"}) {
       &{ $option->{"post_pack_hook"} };
