@@ -6,15 +6,16 @@
 
 =head1 NAME
 
-Rex::Apache::Deploy::Tomcat - Deploy application to tomcat 6.
+Rex::Apache::Deploy::Tomcat7 - Deploy application to Tomcat 7.
 
 =head1 DESCRIPTION
 
-With this module you can deploy WAR archives to Tomcat. Currently it works with Tomcat 6.
+With this module you can deploy WAR archives to Tomcat7. 
+This module needs the manager application and I<manager-script> permissions.
 
 =head1 SYNOPSIS
 
- use Rex::Apache::Deploy qw/Tomcat/;
+ use Rex::Apache::Deploy qw/Tomcat7/;
    
  context_path "/myapp";
     
@@ -31,7 +32,7 @@ With this module you can deploy WAR archives to Tomcat. Currently it works with 
 
 =cut
 
-package Rex::Apache::Deploy::Tomcat;
+package Rex::Apache::Deploy::Tomcat7;
 
 use strict;
 use warnings;
@@ -101,12 +102,7 @@ sub deploy {
 
    $options->{"file"} = "/tmp/$rnd_file.war";
 
-   # zuerst muss undeployed werden
-   _undeploy($options);
-
-   # und dann wieder deployen
    _deploy($options);
-
 
    unlink "/tmp/$rnd_file.war";
 }
@@ -148,7 +144,7 @@ sub _deploy {
 
 	my $ua = LWP::UserAgent->new();
    my $url = _get_url("$server:$p->{port}",
-                                 "deploy?path=" . $p->{"context_path"} . "&war=file:" . $p->{"file"}, 
+                                 "deploy?path=$p->{context_path}&war=file:$p->{file}&update=true", 
                                  $p->{"username"}, 
                                  $p->{"password"},
                                  $p->{"manager_url"});
@@ -167,12 +163,25 @@ sub _undeploy {
 
    my $p = shift;
 	
-	_do_action("undeploy", 
-               $p->{"context_path"},
-               $p->{"port"},
-               $p->{"username"},
-               $p->{"password"},
-               $p->{"manager_url"});
+   my $server = connection->server;
+   if($server eq "<local>") {
+      $server = "localhost";
+   }
+
+	my $ua = LWP::UserAgent->new();
+   my $url = _get_url("$server:$p->{port}",
+                           "undeploy?path=$p->{context_path}",
+                           $p->{username},
+                           $p->{password},
+                           $p->{manager_url});
+
+   Rex::Logger::debug("Connection to: $url");
+   my $resp = $ua->get($url);
+   if($resp->is_success) {
+      Rex::Logger::info($resp->decoded_content);
+   } else {
+      Rex::Logger::info("FAILURE: $url: " . $resp->status_line);
+   }
 
 }
 
@@ -185,7 +194,7 @@ sub _get_url {
 
    $mgr_path ||= "manager";
 	
-	return "http://$user:$pw\@" . "$server/$mgr_path/$command";
+	return "http://$user:$pw\@" . "$server/$mgr_path/text/$command";
 }
 
 
