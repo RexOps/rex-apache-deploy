@@ -139,7 +139,7 @@ use Rex::Logger;
 
 use Cwd qw(getcwd);
 
-our $VERSION = '0.11.99.1';
+our $VERSION = '0.11.99.2';
 
 ###### commonly used
 our @COMMONS = ();

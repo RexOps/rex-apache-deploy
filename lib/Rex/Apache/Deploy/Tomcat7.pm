@@ -152,9 +152,17 @@ sub _deploy {
    Rex::Logger::debug("Connection to: $url");
    my $resp = $ua->get($url);
    if($resp->is_success) {
-      Rex::Logger::info($resp->decoded_content);
+      my $c = $resp->decoded_content;
+      if($c =~ m/FAIL/gmi) {
+         Rex::Logger::info($resp->decoded_content);
+         die($resp->decoded_content);
+      }
+      else {
+         Rex::Logger::info($resp->decoded_content);
+      }
    } else {
       Rex::Logger::info("FAILURE: $url: " . $resp->status_line);
+      die("FAILURE: $url: " . $resp->status_line);
    }
 
 }
