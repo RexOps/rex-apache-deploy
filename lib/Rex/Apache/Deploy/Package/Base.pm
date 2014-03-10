@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Apache::Deploy::Package::Base;
 
 use strict;
@@ -12,54 +12,54 @@ use warnings;
 use Rex::Commands::Gather;
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   my %sys_info = get_system_information();
+  my %sys_info = get_system_information();
 
-   $self->{arch}         ||= $sys_info{architecture},
-   $self->{version}      ||= "1.0";
+  $self->{arch}      ||= $sys_info{architecture},
+  $self->{version}    ||= "1.0";
 
 
-   return $self;
+  return $self;
 }
 
 for my $name (qw/
-                  path
-                  source
-                  release
-                  epoch
-                  version
-                  arch
-                  name
-                  file_user
-                  file_group
-                /) {
-   no strict 'refs';
-   *{__PACKAGE__ . "::$name"} = sub {
-      my ($self, $data) = @_;
+            path
+            source
+            release
+            epoch
+            version
+            arch
+            name
+            file_user
+            file_group
+           /) {
+  no strict 'refs';
+  *{__PACKAGE__ . "::$name"} = sub {
+    my ($self, $data) = @_;
 
-      if($data) {
-         $self->{$name} = $data;
-      }
+    if($data) {
+      $self->{$name} = $data;
+    }
 
-      $self->{$name};
+    $self->{$name};
 
-   };
-   use strict;
+  };
+  use strict;
 }
 
 sub prefix {
-   my ($self, $prefix) = @_;
+  my ($self, $prefix) = @_;
 
-   if($prefix) {
-      $self->{prefix} = $prefix;
-   }
+  if($prefix) {
+    $self->{prefix} = $prefix;
+  }
 
-   return $self->{prefix} || $self->{path};
+  return $self->{prefix} || $self->{path};
 }
 
 1;

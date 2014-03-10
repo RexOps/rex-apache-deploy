@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -19,11 +19,11 @@ If the package is not build yet, it will pass all the arguments to the build() f
  deploy "my-software.tgz";
   
  deploy "my-software",
-    type    => "rpm",
-    version => "1.0",
-    # below this, it is all optional
-    source  => "html",
-    path    => "/var/www/html";
+   type   => "rpm",
+   version => "1.0",
+   # below this, it is all optional
+   source  => "html",
+   path   => "/var/www/html";
 
 =cut
 
@@ -43,40 +43,40 @@ use base qw(Rex::Apache::Deploy::Package::Base);
 
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = $proto->SUPER::new(@_);
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = $proto->SUPER::new(@_);
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub deploy {
-   my ($self, $package_name, %option) = @_;
+  my ($self, $package_name, %option) = @_;
 
 
-   LOCAL {
+  LOCAL {
+    if(! -f $package_name) {
+      $package_name = $self->name . "-" . $self->version . ".tar.gz";
+
       if(! -f $package_name) {
-         $package_name = $self->name . "-" . $self->version . ".tar.gz";
-
-         if(! -f $package_name) {
-            build($self->name, %option);
-         }
+        build($self->name, %option);
       }
-   };
+    }
+  };
 
-   upload $package_name, "/tmp";
+  upload $package_name, "/tmp";
 
-   my $to = $self->prefix;
-   run "tar -C $to -xzf /tmp/$package_name";
-   if($? != 0) {
-      die("Error installing $package_name");
-   }
+  my $to = $self->prefix;
+  run "tar -C $to -xzf /tmp/$package_name";
+  if($? != 0) {
+    die("Error installing $package_name");
+  }
 
-   Rex::Logger::info("Package $package_name installed.");
+  Rex::Logger::info("Package $package_name installed.");
 
-   unlink "/tmp/$package_name";
+  unlink "/tmp/$package_name";
 }
 
 1;

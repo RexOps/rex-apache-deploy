@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,30 +15,30 @@ With this module you can build RedHat packages to distribute your application.
 =head1 SYNOPSIS
 
  build "my-software",
-    type    => "rpm",
-    version => "1.0",
-    source  => "/path/to/your/software",
-    path    => "/path/to/deploy/target",
-    # below this, it is all optional
-    description    => "some description of your package",
-    url            => "website of the package",
-    depends        => [qw/httpd perl/],
-    release        => 1,
-    epoch          => 1,
-    vendor         => "some vendor",
-    license        => "your license for ex. GPL2",
-    section        => "some/section",
-    conflicts      => [qw/somepkg/],
-    provides       => "some-package-name",
-    arch           => "x86_64",
-    target         => "linux / the platform",
-    post_install   => "filename or script to run after installation",
-    pre_install    => "filename or script to run before installation",
-    post_uninstall => "filename or script to run after uninstall",
-    pre_uninstall  => "filename or script to run before uninstall",
-    exclude        => [qw/file1 file2/],
-    maintainer     => "your name",
-    config_files   => [qw/special files for configuration mostly for etc directory/];
+   type   => "rpm",
+   version => "1.0",
+   source  => "/path/to/your/software",
+   path   => "/path/to/deploy/target",
+   # below this, it is all optional
+   description   => "some description of your package",
+   url        => "website of the package",
+   depends      => [qw/httpd perl/],
+   release      => 1,
+   epoch       => 1,
+   vendor      => "some vendor",
+   license      => "your license for ex. GPL2",
+   section      => "some/section",
+   conflicts    => [qw/somepkg/],
+   provides     => "some-package-name",
+   arch        => "x86_64",
+   target      => "linux / the platform",
+   post_install  => "filename or script to run after installation",
+   pre_install   => "filename or script to run before installation",
+   post_uninstall => "filename or script to run after uninstall",
+   pre_uninstall  => "filename or script to run before uninstall",
+   exclude      => [qw/file1 file2/],
+   maintainer    => "your name",
+   config_files  => [qw/special files for configuration mostly for etc directory/];
 
 
 =cut
@@ -62,125 +62,125 @@ use Rex::Apache::Build::Base;
 use base qw(Rex::Apache::Build::Base);
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = $proto->SUPER::new(@_);
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = $proto->SUPER::new(@_);
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   $self->{license}    ||= "unknown";
-   $self->{file_user}  ||= "root";
-   $self->{file_group} ||= "root";
-   $self->{release}    ||= 1;
-   $self->{exclude}    ||= [];
+  $self->{license}   ||= "unknown";
+  $self->{file_user}  ||= "root";
+  $self->{file_group} ||= "root";
+  $self->{release}   ||= 1;
+  $self->{exclude}   ||= [];
 
-   push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}, qr{\.rpm$});
+  push(@{ $self->{exclude} }, qr{^Rexfile$}, qr{^Rexfile\.lock$}, qr{^\.git}, qr{^\.svn}, qr{.*~$}, qr{\.sw[a-z]$}, qr{\.rpm$});
 
-   return $self;
+  return $self;
 }
 
 sub build {
-   my ($self, $name) = @_;
+  my ($self, $name) = @_;
 
-   $name ||= $self->name;
+  $name ||= $self->name;
 
-   mkdir "temp-rpm-build";
-   mkdir "temp-rpm-build/tree";
-   mkdir "temp-rpm-build/tree" . $self->prefix;
+  mkdir "temp-rpm-build";
+  mkdir "temp-rpm-build/tree";
+  mkdir "temp-rpm-build/tree" . $self->prefix;
 
-   my @dirs  = $self->find_dirs;
-   push(@dirs, $self->prefix);
+  my @dirs  = $self->find_dirs;
+  push(@dirs, $self->prefix);
 
-   my @files = $self->find_files;
+  my @files = $self->find_files;
 
-   file "temp-rpm-build/$name.spec",
-      content => template('@spec.template', pkg => $self, cur_dir => getcwd(), files => \@files, dirs => \@dirs);
+  file "temp-rpm-build/$name.spec",
+    content => template('@spec.template', pkg => $self, cur_dir => getcwd(), files => \@files, dirs => \@dirs);
 
-   chdir "temp-rpm-build";
+  chdir "temp-rpm-build";
 
-   my $rpmbuild_path = Rex::Config->get("rpmbuild") || "rpmbuild";
-   run "$rpmbuild_path --buildroot=" . getcwd() . "/tree -bb $name.spec";
+  my $rpmbuild_path = Rex::Config->get("rpmbuild") || "rpmbuild";
+  run "$rpmbuild_path --buildroot=" . getcwd() . "/tree -bb $name.spec";
 
-   chdir "..";
+  chdir "..";
 
-   my $arch = $self->arch;
-   cp "temp-rpm-build/$arch/*.rpm", ".";
+  my $arch = $self->arch;
+  cp "temp-rpm-build/$arch/*.rpm", ".";
 
-   rmdir "temp-rpm-build";
+  rmdir "temp-rpm-build";
 
-   my $build_file = "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
-   Rex::Logger::info("Your build is now available: $build_file");
+  my $build_file = "$name-" . $self->version . "-" . $self->release . "." . $self->arch . ".rpm";
+  Rex::Logger::info("Your build is now available: $build_file");
 
-   return $build_file;
+  return $build_file;
 }
 
 sub find_files {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my @ret;
+  my @ret;
 
-   my @dirs = ($self->{source});
-   for my $dir (@dirs) {
-      opendir(my $dh, $dir) or die($!);
-      while(my $entry = readdir($dh)) {
-         next if($entry eq ".");
-         next if($entry eq "..");
+  my @dirs = ($self->{source});
+  for my $dir (@dirs) {
+    opendir(my $dh, $dir) or die($!);
+    while(my $entry = readdir($dh)) {
+      next if($entry eq ".");
+      next if($entry eq "..");
 
-         if(-d "$dir/$entry") {
-            push(@dirs, "$dir/$entry");
-            next;
-         }
-
-         Rex::Logger::debug("Adding file: " . getcwd() . "/$dir/$entry => $dir/$entry");
-         push(@ret, [getcwd() . "/$dir/$entry", "$dir/$entry"]);
+      if(-d "$dir/$entry") {
+        push(@dirs, "$dir/$entry");
+        next;
       }
-      closedir($dh);
-   }
 
-   # free conffiles
-   for my $conf (@{ $self->config_files }) {
-      @ret = grep { $_->[0] !~ m/$conf/ } @ret;
-   }
+      Rex::Logger::debug("Adding file: " . getcwd() . "/$dir/$entry => $dir/$entry");
+      push(@ret, [getcwd() . "/$dir/$entry", "$dir/$entry"]);
+    }
+    closedir($dh);
+  }
 
-   my $top = $self->source . "/";
-   map { $_->[1] =~ s/^$top// } @ret;
+  # free conffiles
+  for my $conf (@{ $self->config_files }) {
+    @ret = grep { $_->[0] !~ m/$conf/ } @ret;
+  }
 
-   Rex::Logger::debug("==== files ====");
-   Rex::Logger::debug(Dumper(\@ret));
+  my $top = $self->source . "/";
+  map { $_->[1] =~ s/^$top// } @ret;
 
-   return @ret;
+  Rex::Logger::debug("==== files ====");
+  Rex::Logger::debug(Dumper(\@ret));
+
+  return @ret;
 }
 
 sub find_dirs {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my @ret;
+  my @ret;
 
-   my @dirs = ($self->{source});
-   for my $dir (@dirs) {
-      opendir(my $dh, $dir) or die($!);
-      while(my $entry = readdir($dh)) {
-         next if($entry eq ".");
-         next if($entry eq "..");
+  my @dirs = ($self->{source});
+  for my $dir (@dirs) {
+    opendir(my $dh, $dir) or die($!);
+    while(my $entry = readdir($dh)) {
+      next if($entry eq ".");
+      next if($entry eq "..");
 
-         if(-d "$dir/$entry") {
-            push(@dirs, "$dir/$entry");
+      if(-d "$dir/$entry") {
+        push(@dirs, "$dir/$entry");
 
-            Rex::Logger::debug("Adding directory: $dir/$entry");
-            push(@ret, "$dir/$entry");
-         }
-
+        Rex::Logger::debug("Adding directory: $dir/$entry");
+        push(@ret, "$dir/$entry");
       }
-      closedir($dh);
-   }
 
-   my $top = $self->source;
-   map { s/^$top//; $_ = $self->prefix . $_ } @ret;
+    }
+    closedir($dh);
+  }
 
-   Rex::Logger::debug("==== directories ====");
-   Rex::Logger::debug(Dumper(\@ret));
+  my $top = $self->source;
+  map { s/^$top//; $_ = $self->prefix . $_ } @ret;
 
-   return @ret;
+  Rex::Logger::debug("==== directories ====");
+  Rex::Logger::debug(Dumper(\@ret));
+
+  return @ret;
 }
 
 
