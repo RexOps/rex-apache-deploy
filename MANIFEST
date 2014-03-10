@@ -6,6 +6,7 @@ lib/Rex/Apache/Build/rpm.pm
 lib/Rex/Apache/Build/tgz.pm
 lib/Rex/Apache/Deploy.pm
 lib/Rex/Apache/Deploy/Git.pm
+lib/Rex/Apache/Deploy/JBoss.pm
 lib/Rex/Apache/Deploy/Package.pm
 lib/Rex/Apache/Deploy/Package/Base.pm
 lib/Rex/Apache/Deploy/Package/deb.pm

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+use Test::More tests => 21;
 
 use_ok 'Rex::Apache::Build';
 use_ok 'Rex::Apache::Deploy';
@@ -21,6 +21,13 @@ require_ok 'Rex::Apache::Inject::Command';
 require_ok 'Rex::Apache::Inject::Properties';
 require_ok 'Rex::Apache::Inject::Template';
 require_ok 'Rex::Apache::Inject::YAML';
+
+require_ok 'Rex::Apache::Deploy::Git';
+require_ok 'Rex::Apache::Deploy::JBoss';
+require_ok 'Rex::Apache::Deploy::Package';
+require_ok 'Rex::Apache::Deploy::Symlink';
+require_ok 'Rex::Apache::Deploy::Tomcat';
+require_ok 'Rex::Apache::Deploy::Tomcat7';
 
 
 1;
