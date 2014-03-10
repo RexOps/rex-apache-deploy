@@ -13,6 +13,7 @@ lib/Rex/Apache/Deploy/Package/rpm.pm
 lib/Rex/Apache/Deploy/Package/tgz.pm
 lib/Rex/Apache/Deploy/Symlink.pm
 lib/Rex/Apache/Deploy/Tomcat.pm
+lib/Rex/Apache/Deploy/Tomcat7.pm
 lib/Rex/Apache/Inject.pm
 lib/Rex/Apache/Inject/Command.pm
 lib/Rex/Apache/Inject/Properties.pm
