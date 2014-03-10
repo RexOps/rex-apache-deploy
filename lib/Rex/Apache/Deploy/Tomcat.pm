@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -15,9 +15,9 @@ With this module you can deploy WAR archives to Tomcat. Currently it works with 
 =head1 SYNOPSIS
 
  use Rex::Apache::Deploy qw/Tomcat/;
-  
+
  context_path "/myapp";
-   
+
  task "dodeploy", "tc01", "tc02", sub {
    deploy "myapp.war",
      username => "manager",
@@ -66,11 +66,12 @@ This function deploys the given WAR archive. For that it will connect to the Tom
 
 
 =cut
-sub deploy {
-  my ($file, %option) = @_;
 
-  if(! %option) {
-    if(Rex::Config->get("package_option")) {
+sub deploy {
+  my ( $file, %option ) = @_;
+
+  if ( !%option ) {
+    if ( Rex::Config->get("package_option") ) {
       %option = %{ Rex::Config->get("package_option") };
     }
   }
@@ -79,24 +80,24 @@ sub deploy {
 
   no strict;
   no warnings;
-  my $rnd_file = get_random(8, a..z, 0..9);
+  my $rnd_file = get_random( 8, a .. z, 0 .. 9 );
   use strict;
   use warnings;
 
-  if(! exists $options->{"context_path"}) {
+  if ( !exists $options->{"context_path"} ) {
     $options->{"context_path"} = $context_path;
   }
 
-  if(exists $options->{"manager_url"}) {
+  if ( exists $options->{"manager_url"} ) {
     my $mgr_url = $options->{"manager_url"};
     $mgr_url =~ s{^/}{};
     $options->{"manager_url"} = $mgr_url;
-  } 
+  }
   else {
     $options->{"manager_url"} = "manager";
   }
 
-  upload ($file, "/tmp/$rnd_file.war");
+  upload( $file, "/tmp/$rnd_file.war" );
   chmod 644, "/tmp/$rnd_file.war";
 
   $options->{"file"} = "/tmp/$rnd_file.war";
@@ -107,30 +108,29 @@ sub deploy {
   # und dann wieder deployen
   _deploy($options);
 
-
   unlink "/tmp/$rnd_file.war";
 }
 
 sub jk {
-  my ($action, $iname, @opts) = @_;
-  my $option = { @opts };
-  my $path  = $option->{"path"} || "/jkmanager";
+  my ( $action, $iname, @opts ) = @_;
+  my $option = {@opts};
+  my $path   = $option->{"path"} || "/jkmanager";
   my $worker = $option->{"worker"} || "";
 
-  my $url = "http://%s%s/?cmd=update&w=$worker&att=vwa&sw=%s&vwa=%i";
+  my $url    = "http://%s%s/?cmd=update&w=$worker&att=vwa&sw=%s&vwa=%i";
   my $server = Rex->get_current_connection()->{"server"};
 
-  if($action eq "disable") {
-    $url = sprintf($url, $server, $path, $iname, 1);
+  if ( $action eq "disable" ) {
+    $url = sprintf( $url, $server, $path, $iname, 1 );
   }
   else {
-    $url = sprintf($url, $server, $path, $iname, 0);
+    $url = sprintf( $url, $server, $path, $iname, 0 );
   }
 
-  my $ua = LWP::UserAgent->new;
+  my $ua       = LWP::UserAgent->new;
   my $response = $ua->get($url);
 
-  if(! $response->is_success) {
+  if ( !$response->is_success ) {
     die("Failed $action instance");
   }
 }
@@ -142,23 +142,23 @@ sub _deploy {
   my $p = shift;
 
   my $server = connection->server;
-  if($server eq "<local>") {
+  if ( $server eq "<local>" ) {
     $server = "localhost";
   }
 
-	my $ua = LWP::UserAgent->new();
-  my $url = _get_url("$server:$p->{port}",
-                      "deploy?path=" . $p->{"context_path"} . "&war=file:" . $p->{"file"}, 
-                      $p->{"username"}, 
-                      $p->{"password"},
-                      $p->{"manager_url"});
+  my $ua = LWP::UserAgent->new();
+  my $url =
+    _get_url( "$server:$p->{port}",
+    "deploy?path=" . $p->{"context_path"} . "&war=file:" . $p->{"file"},
+    $p->{"username"}, $p->{"password"}, $p->{"manager_url"} );
 
   Rex::Logger::debug("Connection to: $url");
   my $resp = $ua->get($url);
-  if($resp->is_success) {
-    Rex::Logger::info($resp->decoded_content);
-  } else {
-    Rex::Logger::info("FAILURE: $url: " . $resp->status_line);
+  if ( $resp->is_success ) {
+    Rex::Logger::info( $resp->decoded_content );
+  }
+  else {
+    Rex::Logger::info( "FAILURE: $url: " . $resp->status_line );
   }
 
 }
@@ -166,60 +166,58 @@ sub _deploy {
 sub _undeploy {
 
   my $p = shift;
-	
-	_do_action("undeploy", 
-          $p->{"context_path"},
-          $p->{"port"},
-          $p->{"username"},
-          $p->{"password"},
-          $p->{"manager_url"});
+
+  _do_action(
+    "undeploy",       $p->{"context_path"}, $p->{"port"},
+    $p->{"username"}, $p->{"password"},     $p->{"manager_url"}
+  );
 
 }
 
 sub _get_url {
-	my $server = shift;
-	my $command = shift;
-  my $user = shift;
-  my $pw = shift;
+  my $server   = shift;
+  my $command  = shift;
+  my $user     = shift;
+  my $pw       = shift;
   my $mgr_path = shift;
 
   $mgr_path ||= "manager";
-	
-	return "http://$user:$pw\@" . "$server/$mgr_path/$command";
-}
 
+  return "http://$user:$pw\@" . "$server/$mgr_path/$command";
+}
 
 sub _do_action {
 
-  my $action = shift;
-	my $path  = shift;
-  my $port  = shift;
-  my $user  = shift;
-  my $pw    = shift;
+  my $action   = shift;
+  my $path     = shift;
+  my $port     = shift;
+  my $user     = shift;
+  my $pw       = shift;
   my $mgr_path = shift;
 
   $mgr_path ||= "manager";
 
-	my $ua = LWP::UserAgent->new();
+  my $ua                 = LWP::UserAgent->new();
   my $current_connection = Rex::get_current_connection();
 
   my $server = connection->server;
-  if($server eq "<local>") {
+  if ( $server eq "<local>" ) {
     $server = "localhost";
   }
 
-  my $_url = _get_url("$server:$port", "$action?path=$path", $user, $pw, $mgr_path);
+  my $_url =
+    _get_url( "$server:$port", "$action?path=$path", $user, $pw, $mgr_path );
   Rex::Logger::debug("Connecting to: $_url");
 
   my $resp = $ua->get($_url);
-  if($resp->is_success) {
-    Rex::Logger::info($resp->decoded_content);
-  } else {
-    Rex::Logger::info("FAILURE: $_url: " . $resp->status_line);
+  if ( $resp->is_success ) {
+    Rex::Logger::info( $resp->decoded_content );
+  }
+  else {
+    Rex::Logger::info( "FAILURE: $_url: " . $resp->status_line );
   }
 
 }
-
 
 ############ configuration functions #############
 
@@ -230,6 +228,7 @@ This function sets the context path for the application that gets deployed. This
  context_path "/myapp";
 
 =cut
+
 sub context_path {
   $context_path = shift;
 }

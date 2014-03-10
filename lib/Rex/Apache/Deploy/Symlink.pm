@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -19,14 +19,14 @@ With this module you can deploy an application to a special folder and after tha
    $file =~ m/(\d+\.\d+)/;
    return $1;
  };
-  
+
  deploy_to "/data/myapp";
  document_root "/var/www/html";
-   
+
  task "dodeploy", "server1", sub {
    deploy "myapp-1.2.tar.gz";
  };
-  
+
  task "dodeploy", "server1", sub {
    deploy "myapp",
      version => "1.2";
@@ -37,8 +37,6 @@ With this module you can deploy an application to a special folder and after tha
 =over 4
 
 =cut
-
-
 
 package Rex::Apache::Deploy::Symlink;
 
@@ -61,8 +59,8 @@ use Cwd qw(getcwd);
 
 use vars qw(@EXPORT $deploy_to $document_root $generate_deploy_directory);
 @EXPORT = qw(deploy get_live_version get_deploy_directory_for
-          deploy_to generate_deploy_directory document_root 
-          list_versions switch_to_version);
+  deploy_to generate_deploy_directory document_root
+  list_versions switch_to_version);
 
 ############ deploy functions ################
 
@@ -73,7 +71,7 @@ This function will do the deployment. It uploads the file to the target server a
  task "dodeploy", "server1", sub {
    deploy "myapp-1.2.tar.gz";
  };
-  
+
  task "dodeploy", "server1", sub {
    deploy "myapp",
      version => "1.2";
@@ -83,33 +81,34 @@ This function will do the deployment. It uploads the file to the target server a
 =cut
 
 sub deploy {
-  my ($file, %option) = @_;
+  my ( $file, %option ) = @_;
 
-  if(! %option) {
-    if(Rex::Config->get("package_option")) {
+  if ( !%option ) {
+    if ( Rex::Config->get("package_option") ) {
       %option = %{ Rex::Config->get("package_option") };
     }
   }
 
   my $options = \%option;
 
-  unless($file) {
+  unless ($file) {
+
     # if no file is given, use directory name
-    $file = basename(getcwd());
+    $file = basename( getcwd() );
   }
 
-  unless(-f $file) {
+  unless ( -f $file ) {
     my $version = get_version();
 
-    if(exists $options->{version}) {
+    if ( exists $options->{version} ) {
       $version = $options->{version};
     }
 
     # if file doesn't exists, try to find it
-    if(-f "$file.tar.gz") {
+    if ( -f "$file.tar.gz" ) {
       $file = "$file.tar.gz";
     }
-    elsif(-f "$file-$version.tar.gz") {
+    elsif ( -f "$file-$version.tar.gz" ) {
       $file = "$file-$version.tar.gz";
     }
     else {
@@ -118,23 +117,22 @@ sub deploy {
     }
   }
 
-
   no strict;
   no warnings;
-  my $rnd_file = get_random(8, a..z, 0..9);
+  my $rnd_file = get_random( 8, a .. z, 0 .. 9 );
   use strict;
   use warnings;
 
-  unless(is_dir($deploy_to)) {
+  unless ( is_dir($deploy_to) ) {
     mkdir $deploy_to;
   }
 
-  unless(is_writeable($deploy_to)) {
+  unless ( is_writeable($deploy_to) ) {
     Rex::Logger::info("No write permission to $deploy_to");
     exit 1;
   }
 
-  unless(is_writeable(dirname($document_root))) {
+  unless ( is_writeable( dirname($document_root) ) ) {
     Rex::Logger::info("No write permission to $document_root");
     exit 1;
   }
@@ -142,25 +140,28 @@ sub deploy {
   my $deploy_dir = get_deploy_directory_for($file);
   Rex::Logger::debug("deploy_dir: $deploy_dir");
 
-  if(get_live_version() && get_live_version() eq basename($deploy_dir)) {
-    Rex::Logger::info("Sorry, you try to deploy to a version that is currently live.");
+  if ( get_live_version() && get_live_version() eq basename($deploy_dir) ) {
+    Rex::Logger::info(
+      "Sorry, you try to deploy to a version that is currently live.");
     exit 1;
   }
 
-  Rex::Logger::debug("Uploadling $file to /tmp/$rnd_file" . _get_ext($file));
-  upload ($file, "/tmp/$rnd_file" . _get_ext($file));
+  Rex::Logger::debug( "Uploadling $file to /tmp/$rnd_file" . _get_ext($file) );
+  upload( $file, "/tmp/$rnd_file" . _get_ext($file) );
 
-  if(is_dir($deploy_dir)) {
+  if ( is_dir($deploy_dir) ) {
     Rex::Logger::debug("rmdir $deploy_dir");
     rmdir $deploy_dir;
   }
 
   mkdir $deploy_dir;
 
-  run "cd $deploy_dir; " . sprintf(_get_extract_command($file), "/tmp/$rnd_file" . _get_ext($file));
+  run "cd $deploy_dir; "
+    . sprintf( _get_extract_command($file),
+    "/tmp/$rnd_file" . _get_ext($file) );
   run "ln -snf $deploy_dir $document_root";
 
-  Rex::Logger::debug("Unlinking /tmp/$rnd_file" . _get_ext($file));
+  Rex::Logger::debug( "Unlinking /tmp/$rnd_file" . _get_ext($file) );
   unlink "/tmp/$rnd_file" . _get_ext($file);
 }
 
@@ -171,7 +172,7 @@ This function returns all available versions from the directory defined by I<dep
 =cut
 
 sub list_versions {
-  return grep { ! /^\./ } list_files($deploy_to);
+  return grep { !/^\./ } list_files($deploy_to);
 }
 
 =item switch_to_version($new_version)
@@ -180,7 +181,7 @@ This function switches to the given version.
 
  task "switch", "server1", sub {
    my $param = shift;
-    
+
    switch_to_version $param->{version};
  };
 
@@ -190,7 +191,10 @@ sub switch_to_version {
   my ($new_version) = @_;
 
   my @versions = list_versions;
-  if(! grep { /$new_version/ } @versions) { Rex::Logger::info("no version found!"); return; }
+  if ( !grep { /$new_version/ } @versions ) {
+    Rex::Logger::info("no version found!");
+    return;
+  }
 
   run "ln -snf $deploy_to/$new_version $document_root";
 }
@@ -202,23 +206,20 @@ This function returns the current live version.
 =cut
 
 sub get_live_version {
-  my $link = eval {
-    return readlink $document_root;
-  };
+  my $link = eval { return readlink $document_root; };
 
-  return basename($link) if($link);
+  return basename($link) if ($link);
 }
-
 
 ############ configuration functions #############
 
 sub get_deploy_directory_for {
   my ($file) = @_;
 
-  unless($generate_deploy_directory) {
+  unless ($generate_deploy_directory) {
     $generate_deploy_directory = sub {
       my ($file) = @_;
-      if($file =~ m/-([0-9\._~\-]+)\.(zip|tar\.gz|war|tar\.bz2|jar)$/) {
+      if ( $file =~ m/-([0-9\._~\-]+)\.(zip|tar\.gz|war|tar\.bz2|jar)$/ ) {
         return $1;
       }
       else {
@@ -227,8 +228,8 @@ sub get_deploy_directory_for {
     };
   }
   my $gen_dir_name = &$generate_deploy_directory($file);
-  my $deploy_dir = "$deploy_to/$gen_dir_name";
-  
+  my $deploy_dir   = "$deploy_to/$gen_dir_name";
+
   return $deploy_dir;
 }
 
@@ -277,17 +278,18 @@ sub generate_deploy_directory(&) {
   $generate_deploy_directory = shift;
 }
 
-
 ############ helper functions #############
 
 sub _get_extract_command {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return "tar xzf %s";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return "unzip %s";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return "tar xjf %s";
   }
 
@@ -297,11 +299,13 @@ sub _get_extract_command {
 sub _get_pack_command {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return "tar czf %s %s";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return "zip -r %s %s";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return "tar cjf %s %s";
   }
 
@@ -311,18 +315,19 @@ sub _get_pack_command {
 sub _get_ext {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return ".tar.gz";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return ".zip";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return ".tar.bz2";
   }
 
   die("Unknown Archive Format.");
 
 }
-
 
 ####### import function #######
 

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -29,47 +29,46 @@ use Cwd qw(getcwd);
 
 use vars qw(@EXPORT $inject_command);
 @EXPORT = qw(inject
-          inject_command);
+  inject_command);
 
 my $work_dir = getcwd;
 
 ############ deploy functions ################
 
 sub inject {
-  my ($to, @options) = @_;
+  my ( $to, @options ) = @_;
 
-  my $option = { @options };
+  my $option = {@options};
 
-  my $cmd1 = sprintf (_get_extract_command($to), "../$to");
-  my $cmd2 = sprintf (_get_pack_command($to), "../$to", ".");
+  my $cmd1 = sprintf( _get_extract_command($to), "../$to" );
+  my $cmd2 = sprintf( _get_pack_command($to), "../$to", "." );
 
   mkdir("tmp");
   chdir("tmp");
   run $cmd1;
 
-  for my $opt ($option->{"inject"}) {
-    run sprintf($inject_command, $opt->{"key"}, $opt->{"value"});
+  for my $opt ( $option->{"inject"} ) {
+    run sprintf( $inject_command, $opt->{"key"}, $opt->{"value"} );
   }
 
-  if(exists $option->{"pre_pack_hook"}) {
+  if ( exists $option->{"pre_pack_hook"} ) {
     &{ $option->{"pre_pack_hook"} };
   }
 
   run $cmd2;
-  if($? != 0) {
+  if ( $? != 0 ) {
     chdir("..");
     system("rm -rf tmp");
     die("Can't re-pack archive. Please check permissions. Command was: $cmd2");
   }
 
-  if(exists $option->{"post_pack_hook"}) {
+  if ( exists $option->{"post_pack_hook"} ) {
     &{ $option->{"post_pack_hook"} };
   }
 
   chdir("..");
   system("rm -rf tmp");
 }
-
 
 ############ configuration functions #############
 
@@ -82,15 +81,19 @@ sub inject_command {
 sub _get_extract_command {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return "tar xzf %s";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return "unzip %s";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return "tar xjf %s";
-  } elsif($file =~ m/\.war$/) {
+  }
+  elsif ( $file =~ m/\.war$/ ) {
     return "unzip %s";
-  } elsif($file =~ m/\.jar$/) {
+  }
+  elsif ( $file =~ m/\.jar$/ ) {
     return "unzip %s";
   }
 
@@ -100,15 +103,19 @@ sub _get_extract_command {
 sub _get_pack_command {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return "tar czf %s %s";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return "zip -r %s %s";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return "tar cjf %s %s";
-  } elsif($file =~ m/\.war$/) {
+  }
+  elsif ( $file =~ m/\.war$/ ) {
     return "zip -r %s %s";
-  } elsif($file =~ m/\.jar$/) {
+  }
+  elsif ( $file =~ m/\.jar$/ ) {
     return "zip -r %s %s";
   }
 
@@ -118,15 +125,19 @@ sub _get_pack_command {
 sub _get_ext {
   my ($file) = @_;
 
-  if($file =~ m/\.tar\.gz$/) {
+  if ( $file =~ m/\.tar\.gz$/ ) {
     return ".tar.gz";
-  } elsif($file =~ m/\.zip$/) {
+  }
+  elsif ( $file =~ m/\.zip$/ ) {
     return ".zip";
-  } elsif($file =~ m/\.tar\.bz2$/) {
+  }
+  elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return ".tar.bz2";
-  } elsif($file =~ m/\.war$/) {
+  }
+  elsif ( $file =~ m/\.war$/ ) {
     return ".war";
-  } elsif($file =~ m/\.jar$/) {
+  }
+  elsif ( $file =~ m/\.jar$/ ) {
     return ".jar";
   }
 
@@ -145,7 +156,5 @@ sub import {
   }
 
 }
-
-
 
 1;

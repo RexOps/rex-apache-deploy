@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -17,7 +17,7 @@ If the package is not build yet, it will pass all the arguments to the build() f
 =head1 SYNOPSIS
 
  deploy "my-software.deb";
-  
+
  deploy "my-software",
    type   => "deb",
    version => "1.0",
@@ -47,8 +47,6 @@ If the package is not build yet, it will pass all the arguments to the build() f
 
 =cut
 
-
-
 package Rex::Apache::Deploy::Package::deb;
 
 use strict;
@@ -65,13 +63,13 @@ use Rex::Apache::Build;
 use Data::Dumper;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = $proto->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
-  if($self->{arch} eq "x86_64") {
+  if ( $self->{arch} eq "x86_64" ) {
     $self->{arch} = "amd64";
   }
 
@@ -79,14 +77,15 @@ sub new {
 }
 
 sub deploy {
-  my ($self, $package_name, %option) = @_;
+  my ( $self, $package_name, %option ) = @_;
 
   LOCAL {
-    if(! -f $package_name) {
-      $package_name = $self->name . "_" . $self->version . "_" . $self->arch . ".deb";
+    if ( !-f $package_name ) {
+      $package_name =
+        $self->name . "_" . $self->version . "_" . $self->arch . ".deb";
 
-      if(! -f $package_name) {
-        build($self->name, %option);
+      if ( !-f $package_name ) {
+        build( $self->name, %option );
       }
     }
   };
@@ -94,16 +93,17 @@ sub deploy {
   upload $package_name, "/tmp";
 
   run "dpkg -i /tmp/$package_name";
-  if($? != 0) {
+  if ( $? != 0 ) {
+
     # try to install deps
     run "apt-get -y -f install";
-    if($? != 0) {
+    if ( $? != 0 ) {
       unlink "/tmp/$package_name";
       die("Error installing $package_name");
     }
 
     my $pkg = Rex::Pkg->get;
-    if(! $pkg->is_installed($self->name)) {
+    if ( !$pkg->is_installed( $self->name ) ) {
       unlink "/tmp/$package_name";
       die("Error installing $package_name");
     }

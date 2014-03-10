@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -15,30 +15,30 @@ With this module you can prepare your WebApp for deployment.
 =head1 SYNOPSIS
 
  yui_path "./yuicompressor-2.4.6.jar";
-    
+
  get_version_from "webapp/lib/MyApp.pm", qr{\$VERSION=([^;]+);};
-    
+
  get_version_from "webapp/index.php", qr{\$VERSION=([^;]+);};
-    
+
  task "build", sub {
    sprocketize;
    sprocketize "app/assets/javascript/*.js",
     out => "public/js/sprockets.js";
-      
+
    coffee;
    coffee "app/assets/coffee",
     out => "public/js";
-    
+
    sass;
    sass "app/assets/stylesheets",
     out => "public/stylesheets";
-       
+
    yui;
-   yui compress => "file1.js", "file2.js", "file3.css"; 
+   yui compress => "file1.js", "file2.js", "file3.css";
    yui compress => glob("public/javascript/*.js"), glob("public/css/*.css");
-      
+
    build;
-      
+
    build "webapp",
     source  => "webapp/",
     version => "1.0";
@@ -51,9 +51,8 @@ With this module you can prepare your WebApp for deployment.
 
 =cut
 
-  
 package Rex::Apache::Build;
-  
+
 our $VERSION = "0.11.1";
 
 use strict;
@@ -61,17 +60,17 @@ use warnings;
 
 use Cwd qw(getcwd);
 use File::Basename qw(basename);
-  
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-   
-@EXPORT = qw(build 
-          get_version_from get_version 
-          yui yui_path 
-          coffee coffee_path
-          sprocketize sprocketize_path
-          sass sass_path);
+
+@EXPORT = qw(build
+  get_version_from get_version
+  yui yui_path
+  coffee coffee_path
+  sprocketize sprocketize_path
+  sass sass_path);
 
 use vars qw($yui_path $coffee_path $sprocketize_path $sass_path $APP_VERSION);
 
@@ -83,10 +82,11 @@ use Rex::Logger;
 This function sets the path to the yui_compressor. If a relative path is given it will search from the path where the Rexfile is in.
 
 =cut
+
 sub yui_path {
   ($yui_path) = @_;
 
-  unless($yui_path =~ m/^\//) {
+  unless ( $yui_path =~ m/^\// ) {
     $yui_path = getcwd() . "/" . $yui_path;
   }
 }
@@ -96,10 +96,11 @@ sub yui_path {
 This function sets the path to the coffee compiler. If a relative path is given it will search from the path where the Rexfile is in.
 
 =cut
+
 sub coffee_path {
   ($coffee_path) = @_;
 
-  unless($coffee_path =~ m/^\//) {
+  unless ( $coffee_path =~ m/^\// ) {
     $coffee_path = getcwd() . "/" . $coffee_path;
   }
 }
@@ -109,10 +110,11 @@ sub coffee_path {
 This function sets the path to the sprocketize compiler. If a relative path is given it will search from the path where the Rexfile is in.
 
 =cut
+
 sub sprocketize_path {
   ($sprocketize_path) = @_;
 
-  unless($sprocketize_path =~ m/^\//) {
+  unless ( $sprocketize_path =~ m/^\// ) {
     $sprocketize_path = getcwd() . "/" . $sprocketize_path;
   }
 }
@@ -122,15 +124,14 @@ sub sprocketize_path {
 This function sets the path to the sass compiler. If a relative path is given it will search from the path where the Rexfile is in.
 
 =cut
+
 sub sass_path {
   ($sass_path) = @_;
 
-  unless($sass_path =~ m/^\//) {
+  unless ( $sass_path =~ m/^\// ) {
     $sass_path = getcwd() . "/" . $sass_path;
   }
 }
-
-
 
 =item yui($action, @files)
 
@@ -139,48 +140,51 @@ Run a yui command.
  task "build", sub {
    # this will compress the given files
    yui compress => "file1.js", "file2.js", ...;
-    
+
    # yui without any parameters will compress all files in public/javascripts
    yui;
  };
 
 =cut
+
 sub yui {
-  my ($action, @data) = @_;
+  my ( $action, @data ) = @_;
 
   $yui_path ||= "yuicompressor.jar";
 
-  unless(-f $yui_path) {
-    die("No yuicompressor.jar found. Please download this file and define its location with yui_path '/path/to/yuicompress.jar';");
+  unless ( -f $yui_path ) {
+    die(
+      "No yuicompressor.jar found. Please download this file and define its location with yui_path '/path/to/yuicompress.jar';"
+    );
   }
 
-  unless($action) {
+  unless ($action) {
     $action = "compress";
   }
 
-  unless(@data) {
+  unless (@data) {
     @data = glob("public/javascripts/*.js");
   }
 
-  if($action eq "compress" || $action eq "-compress") {
-    my @js_files  = grep { ! /\.min\.js$/  } grep { /\.js$/i } @data;
-    my @css_files = grep { ! /\.min\.css$/ } grep { /\.css$/i } @data;
+  if ( $action eq "compress" || $action eq "-compress" ) {
+    my @js_files  = grep { !/\.min\.js$/ } grep  { /\.js$/i } @data;
+    my @css_files = grep { !/\.min\.css$/ } grep { /\.css$/i } @data;
 
-    if(@js_files) {
+    if (@js_files) {
       Rex::Logger::info("Compressing javascript files");
       for my $file (@js_files) {
         my $new_file = $file;
-        $new_file   =~ s/\.js$/.min.js/;
+        $new_file =~ s/\.js$/.min.js/;
         Rex::Logger::debug("Compressing $file -> $new_file");
         run "java -jar $yui_path -o $new_file $file";
       }
     }
 
-    if(@css_files) {
+    if (@css_files) {
       Rex::Logger::info("Compressing css files");
       for my $file (@css_files) {
         my $new_file = $file;
-        $new_file   =~ s/\.css$/.min.css/;
+        $new_file =~ s/\.css$/.min.css/;
         Rex::Logger::debug("Compressing $file -> $new_file");
         run "java -jar $yui_path -o $new_file $file";
       }
@@ -195,21 +199,21 @@ sub yui {
 
 This function builds your package. Currently only tar.gz packages are supported.
 
- # this will a package of the current directory named after the 
- # directory of the Rexfile and append the version provided by 
+ # this will a package of the current directory named after the
+ # directory of the Rexfile and append the version provided by
  # get_version_from() function
  # This function builds a tar.gz archive.
  task "build", sub {
    build;
  };
-   
- # this will build a package of the current directory named "my-web-app" and 
+
+ # this will build a package of the current directory named "my-web-app" and
  # append the version provided by get_version_from() function.
  task "build", sub {
    build "my-web-app";
  };
-    
- # this function will build a package of the directory "html", name it 
+
+ # this function will build a package of the directory "html", name it
  # "my-web-app" and append the version "1.0" to it.
  task "build", sub {
    build "my-web-app",
@@ -220,20 +224,21 @@ This function builds your package. Currently only tar.gz packages are supported.
  };
 
 =cut
-sub build {
-  my ($name, %option) = @_;
 
-  unless($name) {
-    $name = basename(getcwd());
+sub build {
+  my ( $name, %option ) = @_;
+
+  unless ($name) {
+    $name = basename( getcwd() );
   }
 
-  if(! %option) {
-    if(Rex::Config->get("package_option")) {
+  if ( !%option ) {
+    if ( Rex::Config->get("package_option") ) {
       %option = %{ Rex::Config->get("package_option") };
     }
   }
 
-  if(! exists $option{version}) {
+  if ( !exists $option{version} ) {
     $option{version} = &$APP_VERSION();
   }
 
@@ -243,7 +248,7 @@ sub build {
 
   my $klass = "Rex::Apache::Build::$type";
   eval "use $klass";
-  if($@) {
+  if ($@) {
     die("Can't find build class for type: $type");
   }
 
@@ -261,23 +266,27 @@ sub build {
 Get the version out of a file.
 
 =cut
-sub get_version_from {
-  my ($file, $regex) = @_;
 
-  if(ref($file) eq "CODE") {
+sub get_version_from {
+  my ( $file, $regex ) = @_;
+
+  if ( ref($file) eq "CODE" ) {
     $APP_VERSION = $file;
     return;
   }
 
   $APP_VERSION = sub {
 
-    unless(-f $file) {
-      Rex::Logger::info("Version file not found ($file). Current Path: " . getcwd() . ". Using current time.");
+    unless ( -f $file ) {
+      Rex::Logger::info( "Version file not found ($file). Current Path: "
+          . getcwd()
+          . ". Using current time." );
       return "" . time;
     }
 
-    my ($version) = grep { $_=$1 if $_ =~ $regex; } eval { local(@ARGV) = ($file); <>; };
-    
+    my ($version) =
+      grep { $_ = $1 if $_ =~ $regex; } eval { local (@ARGV) = ($file); <>; };
+
     return $version;
 
   };
@@ -286,7 +295,6 @@ sub get_version_from {
 sub get_version {
   return &$APP_VERSION();
 }
-
 
 =item sprocketize($path_to_js_files, %option)
 
@@ -297,17 +305,17 @@ This function calls the sprocketize command with the given options.
             include   => [qw|app/javascripts vendor/sprockets/prototype/src|],
             asset_root => "public/js",
             out      => "public/js/sprockets.js";
-    
+
    # to include more use an arrayRef
    sprocketize ["app/javascript/*.js", "app/javascript/po/*.js"],
             include   => [qw|app/javascripts vendor/sprockets/prototype/src|],
             asset_root => "public/js",
             out      => "public/js/sprockets.js";
-      
+
    # if called without parameters
-    
+
    sprocketize;
-    
+
    # it will use the following defaults:
    # - javascript (sprockets) in assets/javascripts/*.js
    # - include  assets/javascripts
@@ -318,40 +326,43 @@ This function calls the sprocketize command with the given options.
 =cut
 
 sub sprocketize {
-  my ($files, %option) = @_;
+  my ( $files, %option ) = @_;
 
-  my $dirname = basename(getcwd());
+  my $dirname = basename( getcwd() );
 
-  unless($sprocketize_path) {
+  unless ($sprocketize_path) {
     $sprocketize_path = "sprocketize";
   }
 
-  unless($files) {
+  unless ($files) {
     $files = ["assets/javascripts/*.js"];
   }
 
-  if(! exists $option{out}) {
+  if ( !exists $option{out} ) {
     $option{out} = "public/$dirname.js";
   }
 
-  if(! exists $option{asset_root}) {
+  if ( !exists $option{asset_root} ) {
     $option{asset_root} = "public";
   }
 
-  if(! exists $option{include}) {
+  if ( !exists $option{include} ) {
     $option{include} = ["app/javascripts"];
   }
 
-  if(ref($files) ne "ARRAY") {
-    $files = [ $files ];
+  if ( ref($files) ne "ARRAY" ) {
+    $files = [$files];
   }
 
-  my $files_str = join(" ", @{$files});
-  my $includes = " -I " . join(" -I ", @{$option{include}});
+  my $files_str = join( " ", @{$files} );
+  my $includes = " -I " . join( " -I ", @{ $option{include} } );
 
   Rex::Logger::info("Sprocketizing...");
-  run "$sprocketize_path $includes --asset-root=" . $option{asset_root} . " $files_str > " . $option{out};
-  if($? == 0) {
+  run "$sprocketize_path $includes --asset-root="
+    . $option{asset_root}
+    . " $files_str > "
+    . $option{out};
+  if ( $? == 0 ) {
     Rex::Logger::info("...done.");
   }
   else {
@@ -369,32 +380,33 @@ Compile coffee files to javascript.
    # write the output to "javascripts"
    coffee "coffeesrc",
       out  => "javascripts";
-    
-   # without parameters it will build all files in assets/coffee 
+
+   # without parameters it will build all files in assets/coffee
    # and write the output to public/javascripts.
    coffee;
  };
 
 =cut
-sub coffee {
-  my ($path, %option) = @_;
 
-  unless($coffee_path) {
+sub coffee {
+  my ( $path, %option ) = @_;
+
+  unless ($coffee_path) {
     $coffee_path = "coffee";
   }
 
-  unless($path) {
+  unless ($path) {
     $path = "assets/coffee";
   }
 
-  if(! exists $option{out}) {
+  if ( !exists $option{out} ) {
     $option{out} = "public/javascripts";
   }
 
   Rex::Logger::info("Building coffee script files...");
   my $ret = run "coffee -o " . $option{out} . " -c " . $path . " 2>&1";
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     Rex::Logger::info("...done.");
   }
   else {
@@ -412,32 +424,33 @@ This command will compile all sass files in $input_dir.
    # and put the output into public/stylesheets.
    sass "app/assets/stylesheets",
     out => "public/stylesheets";
-   
+
    # The default is to build all files in assets/sass and put the output
    # into public/css.
    sass;
  };
 
 =cut
-sub sass {
-  my ($input, %option) = @_;
 
-  unless($sass_path) {
+sub sass {
+  my ( $input, %option ) = @_;
+
+  unless ($sass_path) {
     $sass_path = "sass";
   }
 
-  unless($input) {
+  unless ($input) {
     $input = "assets/sass";
   }
 
-  if(! exists $option{out}) {
+  if ( !exists $option{out} ) {
     $option{out} = "public/css";
   }
 
   Rex::Logger::info("Building sass files...");
   my $ret = run "$sass_path -q --update $input:" . $option{out} . " 2>&1";
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     Rex::Logger::info("...done.");
   }
   else {

@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Apache::Deploy::Package::Base;
 
 use strict;
@@ -12,37 +12,38 @@ use warnings;
 use Rex::Commands::Gather;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   my %sys_info = get_system_information();
 
-  $self->{arch}      ||= $sys_info{architecture},
-  $self->{version}    ||= "1.0";
-
+  $self->{arch} ||= $sys_info{architecture}, $self->{version} ||= "1.0";
 
   return $self;
 }
 
-for my $name (qw/
-            path
-            source
-            release
-            epoch
-            version
-            arch
-            name
-            file_user
-            file_group
-           /) {
+for my $name (
+  qw/
+  path
+  source
+  release
+  epoch
+  version
+  arch
+  name
+  file_user
+  file_group
+  /
+  )
+{
   no strict 'refs';
-  *{__PACKAGE__ . "::$name"} = sub {
-    my ($self, $data) = @_;
+  *{ __PACKAGE__ . "::$name" } = sub {
+    my ( $self, $data ) = @_;
 
-    if($data) {
+    if ($data) {
       $self->{$name} = $data;
     }
 
@@ -53,9 +54,9 @@ for my $name (qw/
 }
 
 sub prefix {
-  my ($self, $prefix) = @_;
+  my ( $self, $prefix ) = @_;
 
-  if($prefix) {
+  if ($prefix) {
     $self->{prefix} = $prefix;
   }
 

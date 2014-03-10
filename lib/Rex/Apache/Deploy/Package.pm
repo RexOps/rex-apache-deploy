@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Apache::Deploy::Package;
 
 use strict;
@@ -18,27 +18,28 @@ use vars qw(@EXPORT);
 @EXPORT = qw(deploy);
 
 sub deploy {
-  my ($name, %option) = @_;
+  my ( $name, %option ) = @_;
 
-  unless($name) {
+  unless ($name) {
+
     # if no file is given, use directory name
-    $name = basename(getcwd());
+    $name = basename( getcwd() );
   }
 
-  if(! %option) {
-    if(Rex::Config->get("package_option")) {
+  if ( !%option ) {
+    if ( Rex::Config->get("package_option") ) {
       %option = %{ Rex::Config->get("package_option") };
     }
   }
 
-  if(! exists $option{type}) {
-    if($name =~ m/\.deb$/) {
+  if ( !exists $option{type} ) {
+    if ( $name =~ m/\.deb$/ ) {
       $option{type} = "deb";
     }
-    elsif($name =~ m/\.rpm$/) {
+    elsif ( $name =~ m/\.rpm$/ ) {
       $option{type} = "rpm";
     }
-    elsif($name =~ m/(\.tgz|\.gz)$/) {
+    elsif ( $name =~ m/(\.tgz|\.gz)$/ ) {
       $option{type} = "tgz";
     }
     else {
@@ -48,16 +49,15 @@ sub deploy {
 
   my $klass = "Rex::Apache::Deploy::Package::" . $option{type};
   eval "use $klass";
-  if($@) {
+  if ($@) {
     die("Error loading deploy class of type $option{type}\n");
   }
 
   $option{name} = $name;
 
   my $deploy = $klass->new(%option);
-  $deploy->deploy($name, %option);
+  $deploy->deploy( $name, %option );
 }
-
 
 sub import {
 

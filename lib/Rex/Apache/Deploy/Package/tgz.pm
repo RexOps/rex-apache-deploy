@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -17,7 +17,7 @@ If the package is not build yet, it will pass all the arguments to the build() f
 =head1 SYNOPSIS
 
  deploy "my-software.tgz";
-  
+
  deploy "my-software",
    type   => "rpm",
    version => "1.0",
@@ -26,7 +26,6 @@ If the package is not build yet, it will pass all the arguments to the build() f
    path   => "/var/www/html";
 
 =cut
-
 
 package Rex::Apache::Deploy::Package::tgz;
 
@@ -41,27 +40,25 @@ use Rex::Commands::Fs;
 use Rex::Apache::Deploy::Package::Base;
 use base qw(Rex::Apache::Deploy::Package::Base);
 
-
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = $proto->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub deploy {
-  my ($self, $package_name, %option) = @_;
-
+  my ( $self, $package_name, %option ) = @_;
 
   LOCAL {
-    if(! -f $package_name) {
+    if ( !-f $package_name ) {
       $package_name = $self->name . "-" . $self->version . ".tar.gz";
 
-      if(! -f $package_name) {
-        build($self->name, %option);
+      if ( !-f $package_name ) {
+        build( $self->name, %option );
       }
     }
   };
@@ -70,7 +67,7 @@ sub deploy {
 
   my $to = $self->prefix;
   run "tar -C $to -xzf /tmp/$package_name";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error installing $package_name");
   }
 
