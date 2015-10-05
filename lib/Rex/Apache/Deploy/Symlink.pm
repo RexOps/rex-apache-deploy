@@ -149,17 +149,11 @@ sub deploy {
   Rex::Logger::debug( "Uploadling $file to /tmp/$rnd_file" . _get_ext($file) );
   upload( $file, "/tmp/$rnd_file" . _get_ext($file) );
 
-  if ( is_dir($deploy_dir) ) {
-    Rex::Logger::debug("rmdir $deploy_dir");
-    rmdir $deploy_dir;
-  }
-
   mkdir $deploy_dir;
 
   run "cd $deploy_dir; "
     . sprintf( _get_extract_command($file),
     "/tmp/$rnd_file" . _get_ext($file) );
-  run "ln -snf $deploy_dir $document_root";
 
   Rex::Logger::debug( "Unlinking /tmp/$rnd_file" . _get_ext($file) );
   unlink "/tmp/$rnd_file" . _get_ext($file);
