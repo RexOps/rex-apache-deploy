@@ -281,7 +281,7 @@ sub _get_extract_command {
     return "tar xzf %s";
   }
   elsif ( $file =~ m/\.zip$/ ) {
-    return "unzip %s";
+    return "unzip -o %s";
   }
   elsif ( $file =~ m/\.tar\.bz2$/ ) {
     return "tar xjf %s";
