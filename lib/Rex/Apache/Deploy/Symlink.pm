@@ -154,6 +154,10 @@ sub deploy {
   run "cd $deploy_dir; "
     . sprintf( _get_extract_command($file),
     "/tmp/$rnd_file" . _get_ext($file) );
+    
+  if($? != 0) {
+   die "Error extracting archive.";
+  }
 
   Rex::Logger::debug( "Unlinking /tmp/$rnd_file" . _get_ext($file) );
   unlink "/tmp/$rnd_file" . _get_ext($file);
